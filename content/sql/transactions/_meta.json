@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Transakcje i współbieżność", "en": "Transactions and concurrency" },
+  "order": ["transactions-isolation", "locking-deadlocks"]
+}

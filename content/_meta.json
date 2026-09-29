@@ -2,6 +2,7 @@
   "order": [
     "react",
     "javascript",
-    "dotnet"
+    "dotnet",
+    "sql"
   ]
 }

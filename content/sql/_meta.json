@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "SQL", "en": "SQL" },
+  "order": ["fundamentals", "advanced", "design", "performance", "transactions"]
+}

@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Zaawansowane zapytania", "en": "Advanced SQL" },
+  "order": ["window-functions", "data-modification", "views-procedures-triggers"]
+}
