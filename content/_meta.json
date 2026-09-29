@@ -1,6 +1,7 @@
 {
   "order": [
     "react",
+    "react-native",
     "javascript",
     "dotnet",
     "sql",
