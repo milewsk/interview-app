@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Typy zaawansowane", "en": "Advanced types" },
+  "order": ["utility-and-mapped-types", "conditional-and-template-literal-types", "type-safe-patterns"]
+}

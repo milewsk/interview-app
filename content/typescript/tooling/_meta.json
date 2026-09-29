@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Konfiguracja i narzędzia", "en": "Configuration and tooling" },
+  "order": ["tsconfig-and-strictness", "modules-and-declarations", "types-at-runtime", "typescript-6-and-7"]
+}
