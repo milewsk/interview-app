@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Asynchroniczność", "en": "Asynchrony" },
+  "order": ["event-loop", "promises", "async-await"]
+}

@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "JavaScript", "en": "JavaScript" },
+  "order": ["language", "async", "browser"]
+}

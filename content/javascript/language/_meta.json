@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Język", "en": "Language" },
+  "order": ["types-and-coercion", "scope-and-hoisting", "closures", "this", "prototypes-and-classes", "objects-and-copying", "arrays", "modern-syntax", "iterators-generators", "error-handling", "modules", "memory-and-gc"]
+}
