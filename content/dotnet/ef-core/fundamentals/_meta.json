@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Podstawy", "en": "Fundamentals" },
+  "order": ["dbcontext-configuration", "dbcontext-change-tracking", "model-configuration", "relationships", "inheritance-mapping", "migrations"]
+}

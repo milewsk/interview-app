@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "EF Core", "en": "EF Core" },
+  "order": ["fundamentals", "querying", "saving", "testing"]
+}

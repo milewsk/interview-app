@@ -1,4 +1,4 @@
 {
   "title": { "pl": ".NET", "en": ".NET" },
-  "order": ["csharp"]
+  "order": ["csharp", "ef-core"]
 }
