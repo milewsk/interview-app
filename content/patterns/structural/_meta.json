@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Strukturalne", "en": "Structural" },
+  "order": ["adapter-facade", "decorator-proxy", "composite"]
+}

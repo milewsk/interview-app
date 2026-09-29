@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Wzorce projektowe", "en": "Design patterns" },
+  "order": ["creational", "structural", "behavioral", "data-access"]
+}

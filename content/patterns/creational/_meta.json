@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Kreacyjne", "en": "Creational" },
+  "order": ["singleton", "factories", "builder-prototype"]
+}

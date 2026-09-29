@@ -4,6 +4,7 @@
     "javascript",
     "dotnet",
     "sql",
-    "architecture"
+    "architecture",
+    "patterns"
   ]
 }

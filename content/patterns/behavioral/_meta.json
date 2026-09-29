@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Behawioralne", "en": "Behavioral" },
+  "order": ["strategy-state", "observer", "command", "chain-of-responsibility", "template-method", "mediator"]
+}
