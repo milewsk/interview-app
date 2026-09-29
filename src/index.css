@@ -1,0 +1,99 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* Dark mode is driven by the `dark` class on <html> (see index.html and src/theme). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Syntax highlighting (highlight.js classes), GitHub light/dark palettes.
+ * highlight.js ships each theme as a separate global stylesheet, so the colors
+ * live in variables that switch with the `dark` class.
+ */
+:root {
+  --hl-fg: #24292e;
+  --hl-keyword: #d73a49;
+  --hl-entity: #6f42c1;
+  --hl-constant: #005cc5;
+  --hl-string: #032f62;
+  --hl-variable: #e36209;
+  --hl-comment: #6a737d;
+  --hl-tag: #22863a;
+  --hl-bullet: #735c0f;
+}
+
+.dark {
+  --hl-fg: #c9d1d9;
+  --hl-keyword: #ff7b72;
+  --hl-entity: #d2a8ff;
+  --hl-constant: #79c0ff;
+  --hl-string: #a5d6ff;
+  --hl-variable: #ffa657;
+  --hl-comment: #8b949e;
+  --hl-tag: #7ee787;
+  --hl-bullet: #f2cc60;
+}
+
+.hljs,
+.hljs-subst,
+.hljs-emphasis,
+.hljs-strong {
+  color: var(--hl-fg);
+}
+.hljs-doctag,
+.hljs-keyword,
+.hljs-meta .hljs-keyword,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-variable.language_ {
+  color: var(--hl-keyword);
+}
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.class_.inherited__,
+.hljs-title.function_ {
+  color: var(--hl-entity);
+}
+.hljs-attr,
+.hljs-attribute,
+.hljs-literal,
+.hljs-meta,
+.hljs-number,
+.hljs-operator,
+.hljs-variable,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-selector-id,
+.hljs-section {
+  color: var(--hl-constant);
+}
+.hljs-regexp,
+.hljs-string,
+.hljs-meta .hljs-string {
+  color: var(--hl-string);
+}
+.hljs-built_in,
+.hljs-symbol {
+  color: var(--hl-variable);
+}
+.hljs-comment,
+.hljs-code,
+.hljs-formula {
+  color: var(--hl-comment);
+}
+.hljs-name,
+.hljs-quote,
+.hljs-selector-tag,
+.hljs-selector-pseudo {
+  color: var(--hl-tag);
+}
+.hljs-bullet {
+  color: var(--hl-bullet);
+}
+.hljs-section,
+.hljs-strong {
+  font-weight: bold;
+}
+.hljs-emphasis {
+  font-style: italic;
+}
