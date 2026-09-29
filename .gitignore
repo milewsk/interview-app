@@ -141,3 +141,15 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Vite / editors
+dist-ssr
+*.local
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Claude Code: personal settings and session work notes (shared .claude config stays tracked)
+.claude/settings.local.json
+.claude/work/
