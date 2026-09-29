@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Nowoczesny React (19+)", "en": "Modern React (19+)" },
+  "order": ["actions-and-forms", "server-components"]
+}

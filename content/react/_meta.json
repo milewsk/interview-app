@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "React", "en": "React" },
+  "order": ["fundamentals", "hooks", "state-management", "performance", "modern", "testing"]
+}
