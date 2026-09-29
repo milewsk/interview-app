@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Zasady projektowania", "en": "Design principles" },
+  "order": ["solid", "dry-kiss-yagni", "coupling-cohesion", "dependency-injection"]
+}

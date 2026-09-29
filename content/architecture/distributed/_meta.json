@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Systemy rozproszone", "en": "Distributed systems" },
+  "order": ["messaging-consistency", "resilience-patterns", "api-design"]
+}

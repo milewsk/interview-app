@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Architektura", "en": "Architecture" },
+  "order": ["principles", "styles", "domain", "distributed"]
+}

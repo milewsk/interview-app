@@ -1,0 +1,4 @@
+{
+  "title": { "pl": "Style architektury", "en": "Architecture styles" },
+  "order": ["layered-architecture", "clean-architecture", "monolith-vs-microservices"]
+}
