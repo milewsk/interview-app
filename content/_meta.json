@@ -6,6 +6,7 @@
     "dotnet",
     "sql",
     "architecture",
-    "patterns"
+    "patterns",
+    "docker"
   ]
 }
