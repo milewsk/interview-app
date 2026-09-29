@@ -102,11 +102,11 @@ Kopia płytka kopiuje pola obiektu tak, jak są: typy wartościowe są duplikowa
 zmienia ją też w oryginale (sprawdzone z `MemberwiseClone` i z `with` rekordu). Kopia głęboka kopiuje też rekurencyjnie wskazywane obiekty, czyniąc kopię w pełni niezależną.
 Wybór zależy od tego, czy obiekty zagnieżdżone mają być współdzielone.
 
-### Czy `with` na rekordzie tworzy głęboką kopię? {mid}
+### Kiedy wzorzec prototypu przydaje się w praktyce? {mid}
 
-Nie. `with` wywołuje konstruktor kopiujący rekordu, który kopiuje każde pole płytko, a potem stosuje wymienione zmiany. Właściwości typów referencyjnych, takie jak `List<string>`,
-są współdzielone przez oryginał i kopię, więc modyfikacja listy przez jedno jest widoczna w drugim. Dla pełnej niezależności używa się w rekordach kolekcji niemutowalnych albo
-jawnie kopiuje obiekty zagnieżdżone w wyrażeniu `with`.
+Gdy tworzenie obiektu od zera jest kosztowne albo złożone (sparsowany szablon, skonfigurowany dokument, obiekt gry z wieloma komponentami), a nowe obiekty różnią się niewiele:
+klonuje się wstępnie skonfigurowany prototyp i dostosowuje go, być może z rejestru prototypów po nazwie. W C# rekordy z `with` dają kopiowanie w stylu prototypu dla
+niemutowalnych danych. W kodzie biznesowym jest rzadszy, bo fabryki albo buildery zwykle wyrażają tworzenie czytelniej.
 
 ### Dlaczego odradza się `ICloneable`? {senior}
 

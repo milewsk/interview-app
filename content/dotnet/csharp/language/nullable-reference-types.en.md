@@ -96,10 +96,11 @@ No. It's only compile-time analysis with warnings: `string` and `string?` are th
 still come from code without NRT, reflection, deserialization or the `!` operator. So public APIs still validate arguments, e.g. with
 `ArgumentNullException.ThrowIfNull`.
 
-### How does `string?` differ from `int?`? {mid}
+### How does NRT treat `var` and the result of `FirstOrDefault()`? {mid}
 
-`int?` is `Nullable<int>`: a real struct with `HasValue` and `Value` that exists at runtime. `string?` is only a compiler annotation: at runtime it's
-the same `string` type, which could always be `null`. So `typeof(int?) != typeof(int)`, but for strings the type is the same.
+A local declared with `var` is treated as nullable (`string?`), and the compiler tracks its null state by flow analysis, so `var s = "x"; s = null;` produces no warning;
+warnings appear only where a possibly-null value is dereferenced or passed to a non-nullable parameter. `FirstOrDefault()` on a `List<string>` is annotated to return
+`string?`, so `list.FirstOrDefault().Length` gives warning CS8602 (checked on .NET 10). Handle the `null` case or use `First()` when an element must exist.
 
 ### What does the `!` (null-forgiving) operator do? {mid}
 
@@ -135,8 +136,8 @@ Gradually: enable it per file with `#nullable enable` or per project, starting w
 by correctly marking what may be `null`. When the warnings are gone, enable it for the whole solution and consider `WarningsAsErrors` for nullable. Don't
 silence warnings in bulk with `!`, because that removes the benefit.
 
-### What is null-conditional assignment in C# 14? {mid}
+### Should a public method still check arguments for `null` when NRT is enabled? {mid}
 
-It allows `?.` and `?[]` on the left side of an assignment: `customer?.Order = order` assigns only when `customer` isn't `null`, and otherwise does
-nothing (the right side isn't evaluated either). Previously it required an `if (customer is not null)` block. It also works with compound assignments
-like `+=`, but not with `++` and `--`.
+Yes, for public APIs. NRT is only compile-time analysis: callers may have it disabled, use the `!` operator, pass values from reflection or deserialization, or call from
+another language, so `null` can still arrive at runtime. Validate with `ArgumentNullException.ThrowIfNull(arg)` (or `ThrowIfNullOrEmpty` for strings) at the boundary. Inside a
+fully annotated codebase, private and internal methods can rely on the annotations instead of repeating checks.

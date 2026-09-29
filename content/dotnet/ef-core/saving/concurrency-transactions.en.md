@@ -231,13 +231,11 @@ failure, so the transaction stays usable, e.g. for retrying after a concurrency 
 them manually (`CreateSavepointAsync`, `RollbackToSavepointAsync`). On SQL Server they don't work with MARS
 enabled.
 
-### Which anomalies do the isolation levels eliminate? {mid}
+### How do you set the isolation level of a transaction in EF Core? {mid}
 
-**Read committed** eliminates dirty reads (reading uncommitted changes). **Repeatable read** also eliminates
-non-repeatable reads (the same row read twice gives different values). **Serializable** also eliminates
-phantom reads (new rows matching the condition). **Snapshot** gives a consistent view as of the transaction's
-start using row versioning, without read locks, but a write conflict aborts the transaction. SQL Server and
-PostgreSQL default to Read committed.
+Pass it when beginning the transaction: `await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);` (with `System.Data.IsolationLevel`), or
+use a `TransactionScope` with `TransactionOptions`. Without it, the database's default applies (read committed on SQL Server and PostgreSQL). Providers map levels to what the
+database supports: on SQLite, a requested `RepeatableRead` became `Serializable` in a test. SQL Server's `Snapshot` also requires enabling snapshot isolation on the database.
 
 ### How do you safely decrement stock under many concurrent orders? {mid}
 

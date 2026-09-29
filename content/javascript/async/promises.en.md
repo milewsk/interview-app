@@ -157,11 +157,12 @@ No. The returned promise rejects immediately, but the other operations keep runn
 ignored. Promises have no built-in cancellation. To abort e.g. `fetch` requests, use an `AbortController`:
 pass its `signal` and call `abort()` in `catch`.
 
-### Why doesn't `array.forEach(async ...)` work as expected? {mid}
+### How do you convert a callback-based API to a promise? {mid}
 
-`forEach` ignores the callback's return value, so it doesn't wait for the returned promises. Code after
-`forEach` runs before the operations finish, and their errors don't reach the surrounding `try/catch`. Use
-`for...of` with `await` (sequential) or `await Promise.all(array.map(async ...))` (concurrent).
+Wrap it in `new Promise((resolve, reject) => legacy(arg, (err, value) => err ? reject(err) : resolve(value)))`, or in Node use `util.promisify`, which does the same for
+functions following the `(err, value)` callback convention (checked: the promisified function resolved with the result and rejected with the callback's error). A promise
+settles only once, so later callback calls are ignored. Don't wrap code that already returns a promise in `new Promise`: that "explicit construction" antipattern only adds
+places where errors get lost.
 
 ### How do you run many requests concurrently but no more than N at a time? {senior}
 

@@ -185,19 +185,21 @@ React przypisuje stan do hooków **według kolejności wywołań** w komponencie
 hook zostanie pominięty, wszystkie kolejne dostaną stan „przesunięty” o jedną pozycję. Dlatego hooki
 muszą być wywoływane w tej samej kolejności przy każdym renderze.
 
-### Jak zresetować stan komponentu, gdy zmienia się prop (np. `userId`)? {mid}
+### Kiedy wartość powinna być liczona podczas renderu zamiast trzymana w stanie? {mid}
 
-Najprościej nadać komponentowi `key={userId}`. React potraktuje go jako nowy komponent i utworzy
-stan od zera. Nie jest potrzebny efekt, który resetowałby stan, bo taki efekt powoduje dodatkowy
-render z nieaktualnymi danymi.
+Zawsze wtedy, gdy da się ją wyprowadzić z istniejących propsów albo stanu: pełne imię z imienia i nazwiska, przefiltrowaną listę z elementów i zapytania, sumę z pozycji
+koszyka. Liczenie jej podczas renderu (z `useMemo` tylko wtedy, gdy jest kosztowne) zachowuje jedno źródło prawdy. Kopiowanie jej do stanu i synchronizowanie przez `useEffect`
+powoduje dodatkowy render z nieaktualnymi danymi i łatwo się rozjeżdża. Stan służy do danych, które zmieniają się niezależnie, np. danych wpisanych przez użytkownika albo
+odpowiedzi serwera.
 
 ### Co oznacza błąd „Too many re-renders”? {junior}
 
 Setter został wywołany **bezwarunkowo w trakcie renderu**, więc każdy render planuje następny.
 Najczęstsza przyczyna to `onClick={setOpen(true)}` zamiast `onClick={() => setOpen(true)}`.
 
-### Kiedy wybrać `useReducer` zamiast `useState`? {mid}
+### Jak zaktualizować jeden element tablicy trzymanej w stanie? {mid}
 
-Gdy stan ma kilka powiązanych pól zmienianych razem, gdy przejścia zależą od rodzaju akcji
-(`'added'`, `'deleted'`…) albo gdy chcesz wydzielić i przetestować logikę aktualizacji jako czystą
-funkcję. Przy prostych, niezależnych wartościach `useState` jest czytelniejszy.
+Utworzyć nową tablicę zamiast mutować istniejącą: `setTodos(todos => todos.map(t => t.id === id ? { ...t, done: !t.done } : t))` kopiuje tablicę i zastępuje tylko zmieniony
+element nowym obiektem, więc React widzi nowe referencje i renderuje ponownie. Elementy dodaje się przez `[...todos, item]`, usuwa przez `filter`, a sortuje kopię przez
+`toSorted()` zamiast `sort()`, które mutuje. Mutowanie elementu w miejscu (`todo.done = true`) zachowuje te same referencje, więc aktualizacja może zostać pominięta, a
+zmemoizowane dzieci jej nie zauważą.

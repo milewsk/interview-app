@@ -101,11 +101,12 @@ Static images are imported with `require('./img.png')`; the bundler includes the
 must have explicit width and height, because the size is unknown until download. `resizeMode` (`cover` by default, `contain`, `stretch`, `repeat`, `center`) controls scaling. For
 caching, placeholders and performance, apps often use libraries like `expo-image`.
 
-### What is the difference between `ScrollView` and `FlatList`? {junior}
+### How do you make a component accessible in React Native? {junior}
 
-`ScrollView` renders all its children at once, which is fine for a screen with limited content but wastes memory and time with long or unbounded lists. `FlatList` virtualizes: it
-renders only the items near the visible area and recycles the rest as you scroll, and it adds features like pull-to-refresh, infinite scrolling and separators. Use `FlatList` (or
-`SectionList`) for data lists.
+Give interactive elements a role and a name: `accessibilityRole="button"` (or `role`) and `accessibilityLabel` for icons without text, describe state with `accessibilityState`
+(`{ disabled, checked, selected }`), add `accessibilityHint` for non-obvious actions, and group related elements with `accessible`. Screen readers (VoiceOver, TalkBack) read
+these, and React Native Testing Library's `getByRole('button', { name })` uses them too, so accessible components are easier to test. Also keep touch targets large enough and
+respect font scaling.
 
 ### How do you handle notches and safe areas? {mid}
 

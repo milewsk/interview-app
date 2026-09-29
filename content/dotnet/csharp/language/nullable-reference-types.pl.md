@@ -103,11 +103,12 @@ Nie. To tylko analiza podczas kompilacji z ostrzeżeniami: `string` i `string?` 
 `null` nadal może przyjść z kodu bez NRT, przez refleksję, deserializację albo operator `!`. Dlatego publiczne API wciąż walidują argumenty,
 np. przez `ArgumentNullException.ThrowIfNull`.
 
-### Czym różni się `string?` od `int?`? {mid}
+### Jak NRT traktuje `var` i wynik `FirstOrDefault()`? {mid}
 
-`int?` to `Nullable<int>`: prawdziwa struktura z `HasValue` i `Value`, istniejąca w czasie wykonania. `string?` to tylko adnotacja dla
-kompilatora: w czasie wykonania to ten sam typ `string`, który zawsze mógł być `null`. Dlatego `typeof(int?) != typeof(int)`, a dla stringów
-typ jest ten sam.
+Zmienna lokalna zadeklarowana przez `var` jest traktowana jako nullowalna (`string?`), a kompilator śledzi jej stan null analizą przepływu, więc `var s = "x"; s = null;` nie
+daje ostrzeżenia; ostrzeżenia pojawiają się dopiero tam, gdzie wartość, która może być null, jest wyłuskiwana albo przekazywana do nienullowalnego parametru.
+`FirstOrDefault()` na `List<string>` jest zaadnotowane jako zwracające `string?`, więc `list.FirstOrDefault().Length` daje ostrzeżenie CS8602 (sprawdzone na .NET 10). Trzeba
+obsłużyć przypadek `null` albo użyć `First()`, gdy element musi istnieć.
 
 ### Co robi operator `!` (null-forgiving)? {mid}
 
@@ -145,8 +146,8 @@ Stopniowo: włączać per plik przez `#nullable enable` albo per projekt, zaczyn
 ostrzeżenia, poprawnie oznaczając to, co może być `null`. Gdy ostrzeżeń nie ma, włączyć w całym rozwiązaniu i rozważyć `WarningsAsErrors` dla
 nullable. Nie uciszać ostrzeżeń hurtowo przez `!`, bo to usuwa korzyść.
 
-### Czym jest przypisanie warunkowe (null-conditional assignment) w C# 14? {mid}
+### Czy metoda publiczna powinna nadal sprawdzać argumenty pod kątem `null`, gdy NRT jest włączone? {mid}
 
-Pozwala użyć `?.` i `?[]` po lewej stronie przypisania: `customer?.Order = order` przypisuje tylko wtedy, gdy `customer` nie jest `null`,
-a w przeciwnym razie nic nie robi (prawa strona też się nie wykonuje). Wcześniej wymagało to bloku `if (customer is not null)`. Działa też
-z przypisaniami złożonymi, jak `+=`, ale nie z `++` i `--`.
+Tak, w publicznych API. NRT to tylko analiza w czasie kompilacji: wywołujący mogą mieć ją wyłączoną, użyć operatora `!`, przekazać wartości z refleksji albo deserializacji lub
+wywołać kod z innego języka, więc `null` nadal może dotrzeć w czasie działania. Waliduje się przez `ArgumentNullException.ThrowIfNull(arg)` (albo `ThrowIfNullOrEmpty` dla
+napisów) na granicy. Wewnątrz w pełni zaadnotowanego kodu metody prywatne i wewnętrzne mogą polegać na adnotacjach zamiast powtarzać sprawdzenia.

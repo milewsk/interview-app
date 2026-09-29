@@ -235,13 +235,11 @@ się do niego, więc transakcja pozostaje używalna, np. do ponowienia po konfli
 je też tworzyć ręcznie (`CreateSavepointAsync`, `RollbackToSavepointAsync`). W SQL Server nie działają
 przy włączonym MARS.
 
-### Jakie anomalie eliminują kolejne poziomy izolacji? {mid}
+### Jak ustawić poziom izolacji transakcji w EF Core? {mid}
 
-**Read committed** eliminuje dirty read (czytanie niezatwierdzonych zmian). **Repeatable read** dodatkowo
-non-repeatable read (ten sam wiersz czytany dwa razy daje różne wartości). **Serializable** także phantom
-read (nowe wiersze pasujące do warunku). **Snapshot** daje spójny obraz z chwili startu transakcji dzięki
-wersjonowaniu, bez blokad odczytu, ale przy konflikcie zapisu transakcja zostaje przerwana. Domyślnym
-poziomem w SQL Server i PostgreSQL jest Read committed.
+Przekazać go przy rozpoczynaniu transakcji: `await using var tx = await db.Database.BeginTransactionAsync(IsolationLevel.Serializable);` (z `System.Data.IsolationLevel`) albo
+użyć `TransactionScope` z `TransactionOptions`. Bez tego obowiązuje domyślny poziom bazy (read committed w SQL Server i PostgreSQL). Dostawcy mapują poziomy na to, co
+obsługuje baza: w teście na SQLite żądany `RepeatableRead` stał się `Serializable`. `Snapshot` w SQL Server wymaga też włączenia izolacji snapshot w bazie.
 
 ### Jak bezpiecznie zmniejszyć stan magazynowy przy wielu równoczesnych zamówieniach? {mid}
 

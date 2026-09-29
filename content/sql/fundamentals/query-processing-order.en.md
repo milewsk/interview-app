@@ -88,11 +88,11 @@ exception (in PostgreSQL) is a column functionally dependent on a grouped primar
 No. Without `ORDER BY` the database may return rows in any order, which can change with the execution plan, data, parallelism or version. If order matters,
 including pagination with `LIMIT`/`OFFSET`, you need an explicit `ORDER BY`, ideally ending with a unique column so the order is deterministic.
 
-### How do `COUNT(*)`, `COUNT(column)` and `COUNT(DISTINCT column)` differ? {junior}
+### Can `ORDER BY` use a column alias, or a column that isn't in `SELECT`? {mid}
 
-`COUNT(*)` counts all rows, including those with `NULL`s. `COUNT(column)` counts only rows where the column isn't `NULL`. `COUNT(DISTINCT column)` counts
-distinct non-`NULL` values. For example, for 5 orders of which 3 were shipped, by 3 customers: `COUNT(*) = 5`, `COUNT(shipped_at) = 3`,
-`COUNT(DISTINCT customer) = 3`.
+Yes to both in general, because `ORDER BY` is evaluated after `SELECT`: `ORDER BY yearly` with `salary * 12 AS yearly` worked in PostgreSQL and SQLite, and so did ordering by
+`salary` without selecting it. There are limits: PostgreSQL accepts an alias only on its own, not inside an expression (`ORDER BY yearly + 0` failed with "column does not
+exist"), and with `SELECT DISTINCT` it requires `ORDER BY` expressions to be in the select list. SQLite accepted both cases.
 
 ### How are `NULL`s sorted? {mid}
 

@@ -81,9 +81,9 @@ is harder, so it's used deliberately.
 
 ### How do second and third normal forms differ? {mid}
 
-2NF deals with partial dependencies on a composite key: every non-key column must depend on the whole key, e.g. `product_name` in `order_lines(order_id,
-product_id)` depends only on `product_id`, so it belongs in `products`. 3NF deals with transitive dependencies: a non-key column mustn't depend on another
-non-key column, e.g. `customer_city` in `orders` depends on `customer_id`, so it belongs in `customers`.
+2NF deals with partial dependencies on a composite key: every non-key column must depend on the whole key, e.g. `product_name` in `order_lines(order_id, product_id)` depends
+only on `product_id`, so it belongs in `products`. 3NF deals with transitive dependencies: a non-key column mustn't depend on another non-key column, e.g. `customer_city` in
+`orders` depends on `customer_id`, so it belongs in `customers`.
 
 ### Is storing the product price in the order line a violation of normalization? {mid}
 
@@ -115,7 +115,7 @@ They're optimized for reading and aggregating large amounts of historical data, 
 (e.g. sales) and denormalized dimension tables (product, customer, date) with descriptive attributes, which means fewer joins in analytical queries, simpler
 queries for analysts and better performance of columnar engines. The data is loaded in batches by ETL, so update anomalies are controlled by the loading process.
 
-### How do you model a many-to-many relationship? {junior}
+### How do you model a many-to-many relationship in a relational schema? {junior}
 
 With a junction (associative) table containing foreign keys to both tables, usually with a composite primary key on them, e.g.
 `student_courses(student_id, course_id)`. Attributes of the relationship itself (enrollment date, grade) are stored in the junction table. Storing a list of IDs in

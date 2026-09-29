@@ -87,11 +87,12 @@ Wykrywa zmiany w śledzonych encjach, porządkuje polecenia SQL tak, żeby relac
 polecenia (grupowane tam, gdzie dostawca to obsługuje), odczytuje wygenerowane wartości, jak klucze identity i tokeny współbieżności, a na końcu
 oznacza encje jako `Unchanged`. Jeśli któreś polecenie się nie powiedzie, transakcja jest wycofywana i nic nie zostaje zapisane.
 
-### Czy `SaveChanges` jest atomowe? {junior}
+### Jak usunąć encję bez wcześniejszego wczytywania jej? {junior}
 
-Tak. Domyślnie wszystkie zmiany z jednego wywołania `SaveChanges` wykonują się w jednej transakcji: jeśli któreś polecenie się nie powiedzie (np.
-naruszenie indeksu unikalnego), żadna ze zmian nie zostanie zapisana. Jawna transakcja jest potrzebna dopiero wtedy, gdy kilka wywołań
-`SaveChanges` albo inne operacje (np. `ExecuteUpdate`, surowy SQL) muszą razem się powieść lub razem zawieść.
+Albo użyć `ExecuteDelete` (`db.Orders.Where(o => o.Id == id).ExecuteDelete()`), które od razu wykonuje `DELETE`, albo dołączyć zaślepkę tylko z kluczem i ją usunąć:
+`db.Remove(new Order { Id = 3 }); db.SaveChanges();` (sprawdzone: dało pojedyncze `DELETE ... WHERE "Id" = @p0`). Podejście z zaślepką przechodzi przez `SaveChanges`, więc
+uczestniczy w jego transakcji i interceptorach, ale EF nie usunie kaskadowo zależnych encji, których nie wczytał, a token współbieżności wymaga ustawienia na zaślepce
+oryginalnej wartości.
 
 ### Kiedy znany jest klucz nowej encji? {junior}
 
@@ -138,8 +139,9 @@ dostawcy (`SqlBulkCopy`, `COPY` w PostgreSQL) albo biblioteki z rozszerzeniami h
 EF, wstawia się porcjami (np. 1000 na `SaveChanges`) z nowym kontekstem albo `ChangeTracker.Clear()` między porcjami, żeby koszt pamięci i wykrywania
 zmian pozostał stały.
 
-### Dlaczego aktualizacja encji otrzymanej z API przez `Update()` może być ryzykowna? {mid}
+### Jak zaktualizować jedną kolumnę bez wczytywania encji? {mid}
 
-`Update` oznacza każdą właściwość jako zmodyfikowaną i zapisuje wszystkie kolumny, więc pola, których klient nie wysłał (albo nie powinien móc zmienić,
-jak `IsAdmin` czy `CreatedAt`), zostają nadpisane tym, co zawiera obiekt, często wartościami domyślnymi. Bezpieczniej wczytać encję, skopiować z DTO
-tylko dozwolone pola (żeby wykryte zostały tylko prawdziwe zmiany) i użyć tokenu współbieżności do wykrywania konfliktowych aktualizacji.
+Przez `ExecuteUpdate`: `db.Orders.Where(o => o.Id == 2).ExecuteUpdate(s => s.SetProperty(o => o.Status, "Delivered"))` od razu wykonuje jedno `UPDATE ... SET "Status" = @p` z
+pominięciem change trackera. Albo dołączyć zaślepkę i oznaczyć jako zmienioną tylko tę właściwość:
+`db.Attach(stub); db.Entry(stub).Property(o => o.Status).IsModified = true; db.SaveChanges();`. Sprawdzone: oba sposoby wygenerowały `UPDATE` ustawiające tylko `Status`, a
+pozostałe kolumny zachowały wartości. Nie należy tu używać `Update()`, bo zapisałoby wszystkie kolumny.

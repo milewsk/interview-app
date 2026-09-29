@@ -103,11 +103,12 @@ Kontekst nie jest bezpieczny wątkowo, więc równoległe żądania korzystając
 rósłby bez końca, trzymając wszystkie kiedykolwiek wczytane encje (wyciek pamięci i nieaktualne dane), a jeden nieudany `SaveChanges` zostawiłby
 zepsuty stan dla wszystkich. Kontekst powinien żyć krótko: na żądanie albo na jednostkę pracy.
 
-### Co się stanie, gdy uruchomisz dwa zapytania na tym samym `DbContext` jednocześnie? {mid}
+### Czym różni się konfigurowanie kontekstu w `AddDbContext` od konfigurowania w `OnConfiguring`? {mid}
 
-EF Core to wykryje i rzuci `InvalidOperationException` („A second operation was started on this context instance before a previous operation
-completed”). Kontekst nie jest bezpieczny wątkowo i ma jedno połączenie oraz jeden change tracker. Każdą operację trzeba zakończyć przed
-rozpoczęciem następnej, a do prawdziwej równoległości każde zadanie potrzebuje własnego kontekstu, np. z `IDbContextFactory`.
+`AddDbContext` buduje `DbContextOptions<T>` w rejestracji DI i przekazuje je do konstruktora kontekstu, więc konfiguracja (dostawca, connection string z konfiguracji,
+logowanie) jest w composition root, a testy mogą przekazać inne opcje. `OnConfiguring` wykonuje się przy każdym tworzeniu instancji kontekstu i zaszywa konfigurację w klasie;
+jeśli używa się obu, `OnConfiguring` działa po opcjach z DI, a `optionsBuilder.IsConfigured` pozwala pominąć konfigurację już dostarczoną. W aplikacjach lepsze jest
+`AddDbContext`; dla narzędzi czasu projektowania bez hosta jest `IDesignTimeDbContextFactory`.
 
 ### Jak używać `DbContext` w `BackgroundService`? {mid}
 

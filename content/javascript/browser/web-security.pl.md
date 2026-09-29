@@ -117,12 +117,11 @@ Cross-Site Scripting to wstrzyknięcie i wykonanie skryptu atakującego w kontek
 dane i DOM oraz wysyła zapytania z jego sesją. Rodzaje: stored (ładunek zapisany na serwerze i wyświetlany innym), reflected (ładunek z zapytania
 odbity w odpowiedzi) i DOM-based (kod frontendu wstawia niezaufane dane do miejsca takiego jak `innerHTML`).
 
-### Jak React chroni przed XSS i gdzie mimo to może powstać luka? {mid}
+### Czym jest Subresource Integrity (SRI)? {mid}
 
-React domyślnie escapuje tekst i wartości atrybutów, więc `{userInput}` zawsze renderuje się jako tekst, a w React 19 URL `javascript:` w `href`
-jest blokowany. Luki biorą się z furtek: `dangerouslySetInnerHTML` bez sanityzacji, bezpośrednie operacje na DOM przez `ref` (`innerHTML`),
-niezwalidowane URL-e (np. `data:` czy przekierowanie na obcą domenę), `eval` oraz dane użytkownika wstrzyknięte do `<script>` przy SSR. HTML od
-użytkownika sanityzuje się biblioteką, np. DOMPurify.
+To atrybut tagów `script` i `link`, np. `integrity="sha384-..."` z `crossorigin="anonymous"`, zawierający skrót oczekiwanego pliku. Przeglądarka liczy skrót pobranego zasobu i
+odmawia jego wykonania, jeśli się nie zgadza, więc przejęty albo zmodyfikowany plik na CDN nie wstrzyknie kodu do twojej strony. Działa tylko dla plików, które się nie
+zmieniają, więc przypina się konkretną wersję, a bundlery mogą generować skróty podczas budowania.
 
 ### Dlaczego `innerHTML` z danymi użytkownika jest niebezpieczny, skoro `<script>` wstawiony w ten sposób się nie wykona? {mid}
 

@@ -109,11 +109,12 @@ Obrazy statyczne importuje się przez `require('./img.png')`; bundler je dołąc
 muszą mieć jawną szerokość i wysokość, bo rozmiar nie jest znany przed pobraniem. `resizeMode` (domyślnie `cover`, a także `contain`, `stretch`, `repeat`, `center`) steruje
 skalowaniem. Dla cache'owania, placeholderów i wydajności aplikacje często używają bibliotek takich jak `expo-image`.
 
-### Czym różni się `ScrollView` od `FlatList`? {junior}
+### Jak sprawić, żeby komponent był dostępny w React Native? {junior}
 
-`ScrollView` renderuje wszystkie dzieci naraz, co jest w porządku dla ekranu z ograniczoną treścią, ale marnuje pamięć i czas przy długich albo nieograniczonych listach. `FlatList`
-wirtualizuje: renderuje tylko elementy w pobliżu widocznego obszaru, a resztę odmontowuje przy przewijaniu, i dodaje funkcje takie jak pull-to-refresh, nieskończone przewijanie
-i separatory. Do list danych używa się `FlatList` (albo `SectionList`).
+Nadać elementom interaktywnym rolę i nazwę: `accessibilityRole="button"` (albo `role`) i `accessibilityLabel` dla ikon bez tekstu, opisać stan przez `accessibilityState`
+(`{ disabled, checked, selected }`), dodać `accessibilityHint` dla nieoczywistych akcji i grupować powiązane elementy przez `accessible`. Czytniki ekranu (VoiceOver, TalkBack)
+je odczytują, a `getByRole('button', { name })` z React Native Testing Library też z nich korzysta, więc dostępne komponenty łatwiej testować. Warto też zachować wystarczająco
+duże obszary dotyku i respektować skalowanie czcionki.
 
 ### Jak obsłużyć wycięcia ekranu i bezpieczne obszary? {mid}
 

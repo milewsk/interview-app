@@ -87,11 +87,11 @@ A method with a `switch` or long `if/else` chain choosing between variants of an
 modified (and retested) every time. With strategies each variant is a small, independently testable class, new variants are added by writing a new class (Open/Closed
 Principle), and the choice can come from configuration or user input.
 
-### How do you choose a strategy at runtime with DI? {mid}
+### How do you test code that uses the strategy pattern? {mid}
 
-Register all implementations and select by key: keyed services (`AddKeyedScoped<IShippingStrategy, ExpressShipping>("express")` resolved with the key), a dictionary built
-from registrations, or `IEnumerable<IShippingStrategy>` where each strategy exposes a `Key` or `CanHandle(request)` method and a resolver picks the matching one. The calling
-code depends only on the selection abstraction.
+Test each strategy in isolation as a small unit with inputs and expected outputs (for 3 kg: standard 16, express 37, pickup 0). Test the context with a fake or mock strategy
+to check that it delegates correctly and uses the result, without depending on real algorithms. Test the selection logic separately: the right strategy for each key and a
+clear error for an unknown key. This split is one of the pattern's main benefits.
 
 ### Can a delegate replace the strategy pattern in C#? {mid}
 

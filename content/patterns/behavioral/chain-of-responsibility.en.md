@@ -70,7 +70,7 @@ how logging, auth tokens and resilience policies are attached.
 A behavioral pattern in which a request is passed along a chain of handler objects; each handler either processes it, passes it to the next handler, or both, and can stop further
 processing. The sender only knows the first handler, not which one ends up handling the request. It decouples senders from receivers and lets you compose processing steps.
 
-### What problem does it solve? {junior}
+### What problem does chain of responsibility solve? {junior}
 
 It replaces one big method full of sequential checks (validation, authorization, caching, logging) with separate, small handlers that each have one responsibility. Handlers can be
 reused, tested in isolation, reordered and added without modifying the others, and the chain can be configured at runtime.
@@ -92,11 +92,11 @@ authorization failing for every request or errors escaping the exception handler
 A handler stopping the request instead of passing it on: in middleware, not calling `next` and writing a response directly (403, 304 from cache, a static file). Handlers later in the
 chain and the endpoint never run. It's how validation or authorization rejects requests early and how caching avoids unnecessary work.
 
-### What is a `DelegatingHandler`? {mid}
+### How would you write a middleware that measures request duration? {mid}
 
-A base class for HTTP message handlers that wrap an inner handler: `SendAsync` can modify the request, call `base.SendAsync` to pass it on, then inspect or modify the response. A chain
-of them ends with the handler that actually sends the request. With `IHttpClientFactory` you add them via `AddHttpMessageHandler`, to attach cross-cutting concerns like
-authentication headers, logging, correlation IDs and retries to outgoing calls.
+Start a `Stopwatch`, `await next(context)`, stop it and log the elapsed time, and register it early so it covers the rest of the pipeline. To return the time in a response
+header, don't set it after `next`: by then the response has usually started, and in a test that threw "The response headers cannot be modified because the response has already
+started". Register `context.Response.OnStarting(...)` before calling `next`, which runs just before headers are sent (the header set there arrived in the response).
 
 ### What's the difference between the "first handler wins" and pipeline variants? {mid}
 

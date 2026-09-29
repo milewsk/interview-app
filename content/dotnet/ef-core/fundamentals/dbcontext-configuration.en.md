@@ -93,11 +93,12 @@ A context isn't thread-safe, so concurrent requests using it would throw excepti
 holding all entities ever loaded (a memory leak and stale data), and one failed `SaveChanges` would leave broken state for everyone. A context should be
 short-lived: per request or per unit of work.
 
-### What happens when you run two queries on the same `DbContext` at the same time? {mid}
+### What's the difference between configuring the context in `AddDbContext` and in `OnConfiguring`? {mid}
 
-EF Core detects it and throws `InvalidOperationException` ("A second operation was started on this context instance before a previous operation
-completed"). The context isn't thread-safe and has one connection and one change tracker. Each operation must be awaited before the next one starts,
-and for real parallelism each task needs its own context, e.g. from `IDbContextFactory`.
+`AddDbContext` builds `DbContextOptions<T>` in the DI registration and passes them to the context's constructor, so configuration (provider, connection string from
+configuration, logging) lives in the composition root and tests can pass different options. `OnConfiguring` runs every time a context instance is created and hard-codes
+configuration in the class; if both are used, `OnConfiguring` runs after the options from DI, and `optionsBuilder.IsConfigured` lets it skip configuration already provided.
+Prefer `AddDbContext` in applications; for design-time tools without a host there's `IDesignTimeDbContextFactory`.
 
 ### How do you use `DbContext` in a `BackgroundService`? {mid}
 

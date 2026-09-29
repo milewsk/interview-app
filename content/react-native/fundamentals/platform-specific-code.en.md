@@ -92,11 +92,11 @@ doesn't care which one is loaded.
 When the implementations differ substantially, for example different native components, different libraries or completely different layouts. Separate files keep each version readable
 and allow platform-only imports without loading code for the other platform. For a padding value or one prop, a `Platform.select` inline is simpler.
 
-### How do you handle the Android back button? {mid}
+### How do you adapt the layout for tablets or TV? {mid}
 
-Navigation libraries handle it by default, going back in the stack or closing the app at the root. For custom behavior (closing a modal or bottom sheet, confirming unsaved changes),
-subscribe with `BackHandler.addEventListener('hardwareBackPress', handler)` and return `true` to consume the event; remove the subscription on unmount, and in React Navigation prefer
-subscribing only while the screen is focused.
+`Platform.isPad` (iOS) and `Platform.isTV` identify some device types, but layout decisions are better based on the available space: read `useWindowDimensions()` and switch
+layouts at width breakpoints (e.g. a master-detail view above 768 dp), because Android tablets, foldables, split screen and resizable windows all change the width without
+changing the device type. TV apps also need focus-based navigation instead of touch.
 
 ### What is React Native Web? {mid}
 

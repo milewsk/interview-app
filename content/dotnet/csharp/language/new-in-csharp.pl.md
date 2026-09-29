@@ -114,11 +114,11 @@ C# 12 wychodzi z .NET 8, C# 13 z .NET 9, a C# 14 z .NET 10. Domyślnie kompilato
 projekt `net10.0` używa C# 14. Można jawnie ustawić `<LangVersion>`, ale używanie nowszej wersji języka niż wspierana przez framework nie jest
 wspierane, bo część funkcji wymaga wsparcia środowiska lub bibliotek.
 
-### Czym są konstruktory główne i czym się różnią w klasach i rekordach? {mid}
+### Na co pozwala „alias any type” w C# 12? {mid}
 
-Od C# 12 klasa lub struktura może zadeklarować parametry konstruktora zaraz po nazwie (`class Service(IRepo repo)`), a parametry są widoczne
-w całym ciele, co zmniejsza ilość szablonowego kodu, np. przy wstrzykiwaniu zależności. W rekordzie parametry stają się też publicznymi
-właściwościami biorącymi udział w równości. W klasie to tylko przechwycone parametry: niepubliczne, mutowalne i bez generowanej właściwości.
+Alias `using` może teraz nazywać dowolny typ, nie tylko typy nazwane: krotki (`using Point = (int X, int Y);`), tablice, wskaźniki i zamknięte typy generyczne
+(`using Names = List<string>;`). Skraca długie nazwy typów i nadaje znaczenie kształtom krotek bez deklarowania nowego typu; sprawdzone na .NET 10: `Point p = (1, 2)`
+udostępniło `p.X` i `p.Y`. Alias to tylko nazwa tego samego typu, więc nie daje bezpieczeństwa typów między różnymi aliasami tej samej krotki.
 
 ### Czym są wyrażenia kolekcji? {junior}
 

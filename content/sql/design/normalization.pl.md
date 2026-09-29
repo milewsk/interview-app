@@ -121,7 +121,7 @@ tabelę faktów (np. sprzedaż) i zdenormalizowane tabele wymiarów (produkt, kl
 analitycznych, prostsze zapytania dla analityków i lepszą wydajność silników kolumnowych. Dane są ładowane wsadowo przez ETL, więc anomalie aktualizacji
 kontroluje proces ładowania.
 
-### Jak zamodelować relację wiele-do-wielu? {junior}
+### Jak zamodelować relację wiele-do-wielu w schemacie relacyjnym? {junior}
 
 Tabelą łączącą (asocjacyjną) zawierającą klucze obce do obu tabel, zwykle ze złożonym kluczem głównym na nich, np. `student_courses(student_id, course_id)`.
 Atrybuty samej relacji (data zapisu, ocena) przechowuje się w tabeli łączącej. Zapisanie listy identyfikatorów w jednej kolumnie łamie 1NF i uniemożliwia

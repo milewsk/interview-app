@@ -123,19 +123,18 @@ await db.Blogs.Where(b => b.IsArchived)
 
 ## Questions
 
-### Which patterns does `DbContext` implement? {mid}
+### What is `DetectChanges`, and when does it run? {senior}
 
-**Unit of Work**, because it collects changes to many entities and saves them together in
-`SaveChanges` (by default in one transaction), and **Identity Map**, because within a context each row
-is represented by one instance. `DbSet<T>` is often compared to a repository, which is why adding your
-own generic repository on top of EF Core often adds nothing.
+For plain entities EF uses snapshot change tracking: it stores the original values when an entity is attached and `DetectChanges` compares them with the current values to find
+modifications. It runs automatically in `SaveChanges`, `Entries()`, `Entry()` and some other APIs. With `AutoDetectChangesEnabled = false`, a modified entity stayed
+`Unchanged` in a test until `DetectChanges()` was called, then became `Modified`. Disabling it speeds up adding many entities, but you must call `DetectChanges` yourself
+before saving.
 
-### What lifetime should `DbContext` have in ASP.NET Core, and why? {mid}
+### What does `ChangeTracker.Clear()` do, and when is it useful? {mid}
 
-**Scoped**, i.e. one per HTTP request (the default with `AddDbContext`). A context is lightweight,
-meant for one unit of work, and not thread-safe. A singleton would accumulate tracked entities, return
-stale data and be used concurrently by many requests. For background or parallel work, use
-`IDbContextFactory<T>` and create a separate context per unit of work.
+It stops tracking all entities at once, as if the context were new, without saving anything: in a test, after modifying a tracked entity and calling `Clear()`, the tracker was
+empty and `SaveChanges` wrote 0 rows. It's useful in long-running units of work, such as batch imports, to keep memory and `DetectChanges` cost low between batches, and in
+tests to make sure later queries hit the database instead of returning already-tracked instances. Creating a new short-lived context is often the cleaner alternative.
 
 ### Can you run two queries concurrently on one `DbContext`? {mid}
 
@@ -178,12 +177,11 @@ column. If the object came from an API without all fields, the missing values (e
 overwrite the data in the database. It's safer to load the entity, copy only the allowed fields from the
 DTO, and call `SaveChanges`, which updates only the changed columns.
 
-### How do `ExecuteUpdate`/`ExecuteDelete` differ from changes via `SaveChanges`? {mid}
+### How do you see what the change tracker is tracking? {mid}
 
-They execute one SQL statement immediately, without loading entities into memory, so they're far more
-efficient for bulk operations. But they bypass the change tracker: tracked instances don't see the
-changes, and a later `SaveChanges` may overwrite them. They don't form a shared transaction with other
-operations and don't check concurrency tokens automatically. They do return the number of affected rows.
+Use `ChangeTracker.DebugView.ShortView` (one line per entity with key and state, e.g. `Order {Id: 1} Modified`) or `LongView` (all properties with original and current
+values), which is also shown in the debugger. `ChangeTracker.Entries()` gives the entries programmatically, and `Entry(entity).Property(...).OriginalValue` shows a single
+value. It's the quickest way to understand why `SaveChanges` issues unexpected updates or why an entity isn't saved.
 
 ### What is identity resolution, and what are its side effects? {senior}
 

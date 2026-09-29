@@ -77,11 +77,11 @@ It detects changes in tracked entities, orders the SQL commands so relationships
 (batched where the provider supports it), reads back generated values such as identity keys and concurrency tokens, and finally marks the entities as
 `Unchanged`. If any command fails, the transaction is rolled back and nothing is saved.
 
-### Is `SaveChanges` atomic? {junior}
+### How do you delete an entity without loading it first? {junior}
 
-Yes. By default all changes from one `SaveChanges` call run in one transaction: if any command fails (e.g. a unique index violation), none of the changes are
-saved. You need an explicit transaction only when several `SaveChanges` calls or other operations (e.g. `ExecuteUpdate`, raw SQL) must succeed or fail
-together.
+Either use `ExecuteDelete` (`db.Orders.Where(o => o.Id == id).ExecuteDelete()`), which runs a `DELETE` immediately, or attach a stub with only the key and remove it:
+`db.Remove(new Order { Id = 3 }); db.SaveChanges();` (checked: it produced a single `DELETE ... WHERE "Id" = @p0`). The stub approach goes through `SaveChanges`, so it joins
+its transaction and interceptors, but EF can't cascade-delete dependents it hasn't loaded, and a concurrency token needs its original value set on the stub.
 
 ### When is the key of a new entity known? {junior}
 
@@ -125,8 +125,9 @@ Not with one huge `AddRange` + `SaveChanges`, which creates 100,000 tracked enti
 (`SqlBulkCopy`, PostgreSQL `COPY`) or a bulk extension library, which stream the data in a few operations. If you must use EF, insert in chunks (e.g. 1,000 per
 `SaveChanges`) with a new context or `ChangeTracker.Clear()` between chunks, so memory and change detection costs stay constant.
 
-### Why can updating an entity received from an API with `Update()` be risky? {mid}
+### How do you update a single column without loading the entity? {mid}
 
-`Update` marks every property as modified and writes all columns, so fields the client didn't send (or shouldn't be able to change, such as `IsAdmin` or
-`CreatedAt`) are overwritten with whatever the object contains, often default values. It's safer to load the entity, copy only the allowed fields from a DTO
-(so only real changes are detected), and use a concurrency token to detect conflicting updates.
+With `ExecuteUpdate`: `db.Orders.Where(o => o.Id == 2).ExecuteUpdate(s => s.SetProperty(o => o.Status, "Delivered"))` runs one `UPDATE ... SET "Status" = @p` immediately,
+bypassing the change tracker. Or attach a stub and mark only that property as modified:
+`db.Attach(stub); db.Entry(stub).Property(o => o.Status).IsModified = true; db.SaveChanges();`. Checked: both generated an `UPDATE` setting only `Status`, and the other
+columns kept their values. Avoid `Update()` here, since it would write every column.

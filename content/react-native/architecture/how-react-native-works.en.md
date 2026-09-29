@@ -78,11 +78,11 @@ Fabric is the New Architecture's renderer, implemented mostly in shared C++. Ren
 Commit: the new tree becomes the next tree and Yoga computes layout. Mount: the renderer diffs the previous and next trees and applies a list of view mutations to host views on the UI
 thread. Because trees are immutable, rendering can be interrupted and can run on different threads, which enables concurrent React features and synchronous updates.
 
-### What are Turbo Native Modules and Codegen? {mid}
+### What is bridgeless mode? {mid}
 
-Turbo Native Modules are native modules exposed to JS through JSI: they load lazily on first use instead of all at startup, and calls can be synchronous. Codegen reads a typed
-specification written in TypeScript or Flow and generates the C++ and platform glue at build time, so the JS interface and the native implementation are type-checked against each
-other instead of relying on runtime conversions.
+Running React Native with the legacy bridge removed entirely: all communication between JS and native goes through JSI, including module calls, events and timers, instead of
+keeping the bridge around for compatibility. It became the default whenever the New Architecture is enabled in RN 0.74, and interop layers let many legacy modules and
+components work without changes. Since 0.82 there's no way back, because the New Architecture is the only option.
 
 ### What is Hermes and why is it the default engine? {mid}
 

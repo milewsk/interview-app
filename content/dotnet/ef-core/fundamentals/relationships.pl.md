@@ -125,7 +125,7 @@ Z konwencji: nawigacja do innej encji i właściwość o nazwie `<Nawigacja>Id` 
 relację z tym FK. Wymagalność wynika z typu FK: `int` oznacza relację wymaganą, `int?` opcjonalną. Przy
 nullable reference types także z nullowalności nawigacji. Bez właściwości FK EF tworzy shadow property.
 
-### Jak zamodelować relację wiele do wielu? {junior}
+### Jak zamodelować relację wiele-do-wielu w EF Core? {junior}
 
 Najprościej przez nawigacje kolekcji po obu stronach (`Book.Tags`, `Tag.Books`), a EF sam utworzy tabelę
 łączącą z kluczem złożonym. Jeśli połączenie ma dodatkowe dane (np. `EnrolledAt`, rola), tworzy się jawną
@@ -182,9 +182,8 @@ porównywać po zawartości i nie obsługują `ExecuteUpdate`. Complex types maj
 przy przypisaniu, porównanie po zawartości). W EF 10 obsługują typy opcjonalne, JSON i struktury, a zespół EF
 zaleca je dla nowych modeli zamiast owned types.
 
-### Adnotacje czy Fluent API do konfiguracji relacji? {junior}
+### Czy encja powinna mieć i właściwość nawigacyjną, i właściwość klucza obcego? {junior}
 
-Adnotacje (`[ForeignKey]`, `[InverseProperty]`, `[Required]`) wystarczą w prostych przypadkach i są
-widoczne przy encji. Fluent API potrafi więcej (klucze złożone, `OnDelete`, relacje 1:1, tabele łączące,
-indeksy) i nie wiąże klas domeny z EF. Przy konflikcie wygrywa Fluent API. W większych projektach
-konfigurację wydziela się do klas `IEntityTypeConfiguration<T>`.
+Zwykle tak. Nawigacja (`Order.Customer`) pozwala pracować z powiązanymi obiektami, a właściwość klucza obcego (`CustomerId`) pozwala ustawić albo odczytać relację po
+identyfikatorze bez wczytywania powiązanej encji i bez złączenia, np. przy tworzeniu zamówienia z żądania API. Jeśli pominie się właściwość FK, EF tworzy dla kolumny
+właściwość cieniową (shadow property), co działa, ale jest mniej wygodne. Można też mieć tylko FK bez nawigacji, gdy nigdy nie trzeba przechodzić relacji.

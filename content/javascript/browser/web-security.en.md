@@ -104,12 +104,11 @@ Cross-Site Scripting is injecting and running an attacker's script in the contex
 and the DOM and sends requests with their session. Types: stored (the payload saved on the server and shown to others), reflected (the payload from the
 request echoed in the response) and DOM-based (frontend code puts untrusted data into a sink like `innerHTML`).
 
-### How does React protect against XSS, and where can a vulnerability still occur? {mid}
+### What is Subresource Integrity (SRI)? {mid}
 
-React escapes text and attribute values by default, so `{userInput}` is always rendered as text, and in React 19 a `javascript:` URL in `href` is blocked.
-Vulnerabilities come from escape hatches: `dangerouslySetInnerHTML` without sanitization, direct DOM operations through `ref` (`innerHTML`), unvalidated
-URLs (e.g. `data:` or a redirect to a foreign domain), `eval` and user data injected into `<script>` during SSR. User HTML should be sanitized with a library
-such as DOMPurify.
+An attribute on `script` and `link` tags, e.g. `integrity="sha384-..."` with `crossorigin="anonymous"`, containing a hash of the expected file. The browser computes the hash
+of the downloaded resource and refuses to execute it if it doesn't match, so a compromised or modified file on a CDN can't inject code into your page. It only works for files
+that don't change, so you pin a specific version, and bundlers can generate the hashes during the build.
 
 ### Why is `innerHTML` with user data dangerous even though a `<script>` inserted this way doesn't run? {mid}
 

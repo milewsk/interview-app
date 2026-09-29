@@ -97,16 +97,17 @@ user-visible identifies the element.
 long press gave `pressIn, longPress, pressOut` without `press`), and typing enters characters one by one with focus and change events. `userEvent` catches more bugs; `fireEvent` is
 simpler and fine for custom events.
 
-### Why are snapshot tests discouraged? {mid}
+### How do you test a component that uses React Navigation? {mid}
 
-A snapshot is accepted as correct when it's first written, even if the output is wrong; large snapshots change with any refactoring and get updated with `--updateSnapshot` without real
-review, so they detect changes rather than bugs. Explicit assertions on what the user sees are more meaningful. Small snapshots of stable, presentational components can still be useful.
+Render it inside a real `NavigationContainer` with a small navigator containing the screens involved, interact like a user, and assert on what's rendered: in a test, pressing
+a button showed "Details 42" and `useFocusEffect` logged blur and focus when navigating away and back. A navigation ref (`createNavigationContainerRef`) lets tests inspect the
+state. Mocking `useNavigation` to check that `navigate` was called is quicker but tests implementation details rather than behavior.
 
-### How do you test code that behaves differently on iOS and Android? {senior}
+### How do you test how a screen behaves offline? {mid}
 
-Run the test suite for both platforms: the preset defaults to iOS, and a second Jest project with `haste.defaultPlatform: 'android'` resolves `.android` files and sets `Platform.OS` to
-`android`. In a test, the same import resolved to the iOS file in one configuration and the Android file in the other, and Android-only behavior like `BackHandler` could be tested.
-Native differences still require E2E tests on both platforms.
+Control connectivity in the test instead of relying on the device: with TanStack Query, call `onlineManager.setOnline(false)` before rendering, assert the offline UI, then
+`setOnline(true)` and wait for data with `findBy*`. In a test, a query stayed `pending/paused` with no fetch calls while offline and ran after reconnecting, and a mutation
+started offline was paused and sent after reconnecting. Use a fresh `QueryClient` per test with retries disabled, and check real devices in airplane mode for the native side.
 
 ### What E2E testing tools are used for React Native? {mid}
 

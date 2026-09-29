@@ -133,11 +133,11 @@ Random GUIDs inserted into a clustered index land in random positions, which cau
 sequential GUIDs for SQL Server keys by default, which avoids the problem if you let EF generate the value. When the application creates keys itself, use a
 time-ordered format such as `Guid.CreateVersion7()` (.NET 9+), or keep a non-clustered GUID key and a clustered integer column.
 
-### What are shadow properties? {mid}
+### What is a backing field, and when does EF Core use one? {mid}
 
-Properties that exist in the EF model and in the database, but not in the entity class, e.g. foreign keys without a CLR property, or audit columns like
-`CreatedAt`. They're configured with `Property<DateTime>("CreatedAt")`, read and set through `Entry(entity).Property("CreatedAt")`, and used in queries with
-`EF.Property<DateTime>(e, "CreatedAt")`. They keep infrastructure details out of the domain model.
+A private field that EF reads and writes instead of (or in addition to) a property, which lets you encapsulate state. By convention EF finds fields named like `_lines` for a
+property `Lines`, so an entity can expose `IReadOnlyCollection<Line> Lines => _lines` and change the collection only through methods like `AddLine`. Checked on EF Core 10: the
+navigation was mapped to the `_lines` field and `Include` loaded the line through it. `HasField` and `UsePropertyAccessMode` configure non-conventional names and access.
 
 ### What does `ConfigureConventions` give you? {mid}
 

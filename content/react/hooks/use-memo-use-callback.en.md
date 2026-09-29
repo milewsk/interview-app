@@ -150,9 +150,8 @@ shallow prop comparison sees them as different and `memo` has no effect. Fixes: 
 (`useMemo` around the JSX), pass data instead of JSX, or move `memo` to the component that's actually
 expensive.
 
-### When should you use `useMemo` to stabilize an object passed through context? {mid}
+### Why can `useMemo` recompute on every render even though its inputs look unchanged? {mid}
 
-When a provider passes an object `value={{ user, login }}`. A new object on every provider render makes all
-context consumers re-render, even when the data hasn't changed. Wrapping the value in `useMemo` (and functions
-in `useCallback`) means consumers re-render only when the data actually changes. The alternative is splitting
-it into several smaller contexts.
+Dependencies are compared with `Object.is`, so an object, array or function created during render is a new value every time:
+`useMemo(() => filter(items, options), [items, options])` recomputes on every render if `options` is an inline object like `{ sort: 'asc' }`. Depend on primitive values
+(`options.sort`), memoize the dependency itself, or create it outside the component. The same applies to `useCallback`, `useEffect` and `React.memo` props.

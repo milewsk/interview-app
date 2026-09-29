@@ -177,13 +177,12 @@ na stercie. `class` jest właściwa dla obiektów z tożsamością, dużych lub 
 i sytuacji, w których obiekt jest często przekazywany. Duża struktura kopiowana przy każdym
 wywołaniu bywa wolniejsza niż klasa.
 
-### Czym różni się `record` od `class` i od `record struct`? {mid}
+### Co robią `ref`, `out` i `in` przy przekazywaniu argumentów? {mid}
 
-`record` (czyli `record class`) to typ referencyjny, dla którego kompilator generuje **równość
-wartościową** (`Equals`, `==`, `GetHashCode`), czytelne `ToString()`, dekonstrukcję i wyrażenie
-`with`. Zwykła `class` porównuje referencje. `record struct` daje te same udogodnienia dla typu
-wartościowego. Rekordy pozycyjne `record Person(string Name)` mają właściwości `init`, a w
-`record struct` są domyślnie mutowalne, chyba że dodamy `readonly`.
+Wszystkie trzy przekazują referencję do zmiennej wywołującego zamiast kopii. `ref` pozwala metodzie czytać i zmieniać zmienną (musi być zainicjalizowana przed wywołaniem).
+`out` wymaga, żeby metoda ją przypisała, i służy do zwracania dodatkowych wartości, jak w `int.TryParse("42", out var n)`. `in` przekazuje referencję tylko do odczytu, co
+pozwala uniknąć kopiowania dużych struktur przy gwarancji, że metoda ich nie zmieni. Dla typów referencyjnych `ref` ma znaczenie tylko wtedy, gdy metoda przypisuje parametrowi
+nowy obiekt.
 
 ### Dlaczego `list[0].X = 5` nie kompiluje się dla `List<struct>`? {mid}
 

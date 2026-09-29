@@ -91,11 +91,11 @@ LINQ to XML (`XElement` containing other `XNode`s) and `System.Text.Json.Nodes` 
 containing other expressions), `CompositeFileProvider` and `CompositeChangeToken` in ASP.NET Core, and UI trees in WPF, MAUI and Blazor. They all let you work with a node
 without caring whether it's a leaf or has children.
 
-### How does composite relate to the specification pattern? {senior}
+### How do you traverse a very deep composite tree safely? {senior}
 
-Composite specifications combine simple business rules into complex ones: `And`, `Or` and `Not` specifications are composites whose children are other specifications, and
-evaluating the root evaluates the whole tree (`IsSatisfiedBy` or a combined expression). This lets rules be built from small reusable parts at runtime, for example filters
-configured by users.
+Replace recursion with an explicit `Stack<T>` (depth-first) or `Queue<T>` (breadth-first): push the root, then repeatedly pop a node, process it and push its children.
+Recursion uses the call stack, and a stack overflow terminates the .NET process and can't be caught. In a test, an iterative count of a 200,000-level chain returned 200000,
+while the recursive version crashed with "Stack overflow." Iterative traversal also makes it easy to detect cycles with a visited set.
 
 ### What are the risks of the composite pattern? {mid}
 

@@ -104,13 +104,13 @@ In the final projection (the top-level `Select`): EF executes the translatable p
 rows. That's safe, because it doesn't change which rows are downloaded. Client code in `Where`, `OrderBy`, `GroupBy` or joins would require downloading all
 the data, so EF rejects it.
 
-### How do `First`, `Single` and their `OrDefault` variants differ? {junior}
+### How do `First` and `Single` translate to SQL, and when should you use each? {junior}
 
 `First` returns the first matching row and throws when there isn't any, while `FirstOrDefault` returns `null`/default. `Single` additionally verifies that
 exactly one row matches and throws "Sequence contains more than one element" when there are more, which is why it generates `TOP(2)`. `Single` is for queries
 by a unique key, and `First` should be combined with `OrderBy`, because without it the "first" row is arbitrary.
 
-### Why is `Any()` better than `Count() > 0`? {junior}
+### What SQL do `Any()` and `Count() > 0` produce, and which should you use? {junior}
 
 `Any()` translates to `EXISTS`, which lets the database stop at the first matching row. `Count() > 0` must count all matching rows first. For large tables and
 non-selective conditions the difference can be significant, and `Any()` also expresses the intent better.

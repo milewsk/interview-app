@@ -126,7 +126,7 @@ relationship with that FK. Whether it's required follows from the FK type: `int`
 With nullable reference types, also from the navigation's nullability. Without an FK property, EF creates a shadow
 property.
 
-### How do you model a many-to-many relationship? {junior}
+### How do you model a many-to-many relationship in EF Core? {junior}
 
 Most simply with collection navigations on both sides (`Book.Tags`, `Tag.Books`), and EF creates the join table with
 a composite key itself. If the link has extra data (e.g. `EnrolledAt`, a role), create an explicit join entity with
@@ -180,9 +180,8 @@ in practice entities with a hidden key: they have reference semantics, can't be 
 don't support `ExecuteUpdate`. Complex types have value semantics (copied on assignment, compared by content). In EF
 10 they support optional types, JSON and structs, and the EF team recommends them over owned types for new models.
 
-### Annotations or Fluent API for configuring relationships? {junior}
+### Should an entity have both a navigation property and a foreign key property? {junior}
 
-Annotations (`[ForeignKey]`, `[InverseProperty]`, `[Required]`) are enough for simple cases and are visible on the
-entity. The Fluent API can do more (composite keys, `OnDelete`, 1:1 relationships, join tables, indexes) and doesn't
-tie domain classes to EF. Fluent API wins on conflict. Larger projects move configuration into
-`IEntityTypeConfiguration<T>` classes.
+Usually yes. The navigation (`Order.Customer`) lets you work with related objects, while the foreign key property (`CustomerId`) lets you set or read the relationship by ID
+without loading the related entity or joining, e.g. when creating an order from an API request. If you omit the FK property, EF creates a shadow property for the column, which
+works but is less convenient. You can also have only the FK and no navigation when you never need to traverse the relationship.

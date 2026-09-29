@@ -154,9 +154,8 @@ porównanie propsów uzna je za różne i `memo` nic nie da. Rozwiązania: zmemo
 wokół JSX), przekazywać dane zamiast JSX albo przenieść `memo` na komponent, który faktycznie jest
 kosztowny.
 
-### Kiedy użyć `useMemo` do stabilizacji obiektu przekazywanego w kontekście? {mid}
+### Dlaczego `useMemo` może przeliczać się przy każdym renderze, choć jego wejścia wyglądają na niezmienione? {mid}
 
-Gdy provider przekazuje obiekt `value={{ user, login }}`. Nowy obiekt przy każdym renderze providera
-sprawia, że wszyscy konsumenci kontekstu renderują się ponownie, nawet gdy dane się nie zmieniły.
-Opakowanie wartości w `useMemo` (a funkcji w `useCallback`) powoduje, że konsumenci renderują się tylko
-przy faktycznej zmianie danych. Alternatywą jest podział na kilka mniejszych kontekstów.
+Zależności są porównywane przez `Object.is`, więc obiekt, tablica albo funkcja utworzone podczas renderu są za każdym razem nową wartością:
+`useMemo(() => filter(items, options), [items, options])` przelicza się przy każdym renderze, jeśli `options` to obiekt w miejscu, np. `{ sort: 'asc' }`. Należy zależeć od
+wartości prymitywnych (`options.sort`), zmemoizować samą zależność albo utworzyć ją poza komponentem. To samo dotyczy `useCallback`, `useEffect` i propsów `React.memo`.

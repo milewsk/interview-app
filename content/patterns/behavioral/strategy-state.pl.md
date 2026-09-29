@@ -92,11 +92,11 @@ Metoda ze `switch` albo długim łańcuchem `if/else` wybierającym między wari
 każdym razem modyfikować (i testować ponownie). Ze strategiami każdy wariant to mała, niezależnie testowalna klasa, nowe warianty dodaje się, pisząc nową klasę (zasada otwarte-
 zamknięte), a wybór może pochodzić z konfiguracji albo danych od użytkownika.
 
-### Jak wybrać strategię w czasie wykonania z DI? {mid}
+### Jak testować kod używający wzorca strategii? {mid}
 
-Zarejestrować wszystkie implementacje i wybierać po kluczu: keyed services (`AddKeyedScoped<IShippingStrategy, ExpressShipping>("express")` pobierane po kluczu), słownik zbudowany
-z rejestracji albo `IEnumerable<IShippingStrategy>`, gdzie każda strategia udostępnia `Key` albo metodę `CanHandle(request)`, a resolver wybiera pasującą. Kod wywołujący zależy
-tylko od abstrakcji wyboru.
+Każdą strategię testuje się osobno jako małą jednostkę z danymi wejściowymi i oczekiwanymi wynikami (dla 3 kg: standard 16, ekspres 37, odbiór 0). Kontekst testuje się z
+atrapą albo mockiem strategii, żeby sprawdzić, że poprawnie deleguje i używa wyniku, bez zależności od prawdziwych algorytmów. Logikę wyboru testuje się osobno: właściwa
+strategia dla każdego klucza i jasny błąd dla nieznanego klucza. Ten podział to jedna z głównych zalet wzorca.
 
 ### Czy delegat może zastąpić wzorzec strategii w C#? {mid}
 

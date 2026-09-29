@@ -99,11 +99,11 @@ Nie. Bez `ORDER BY` baza może zwrócić wiersze w dowolnej kolejności, która 
 kolejność ma znaczenie, także przy stronicowaniu przez `LIMIT`/`OFFSET`, potrzebne jest jawne `ORDER BY`, najlepiej kończące się unikalną kolumną, żeby
 kolejność była deterministyczna.
 
-### Czym różnią się `COUNT(*)`, `COUNT(kolumna)` i `COUNT(DISTINCT kolumna)`? {junior}
+### Czy `ORDER BY` może używać aliasu kolumny albo kolumny, której nie ma w `SELECT`? {mid}
 
-`COUNT(*)` liczy wszystkie wiersze, także te z `NULL`. `COUNT(kolumna)` liczy tylko wiersze, w których kolumna nie jest `NULL`. `COUNT(DISTINCT kolumna)` liczy
-różne wartości różne od `NULL`. Na przykład dla 5 zamówień, z których 3 wysłano, złożonych przez 3 klientów: `COUNT(*) = 5`, `COUNT(shipped_at) = 3`,
-`COUNT(DISTINCT customer) = 3`.
+Zasadniczo tak, bo `ORDER BY` jest obliczane po `SELECT`: `ORDER BY yearly` przy `salary * 12 AS yearly` zadziałało w PostgreSQL i SQLite, podobnie jak sortowanie po `salary`
+bez jej wybierania. Są ograniczenia: PostgreSQL przyjmuje alias tylko samodzielnie, a nie w wyrażeniu (`ORDER BY yearly + 0` zakończyło się błędem „column does not exist”), a
+przy `SELECT DISTINCT` wymaga, żeby wyrażenia `ORDER BY` były na liście wybieranych kolumn. SQLite przyjął oba przypadki.
 
 ### Jak sortowane są wartości `NULL`? {mid}
 

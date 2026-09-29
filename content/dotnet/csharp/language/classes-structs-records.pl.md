@@ -141,11 +141,12 @@ Gdy typ reprezentuje małą, pojedynczą wartość (np. punkt, kwotę, identyfik
 alokacji na stercie daje realny zysk. Wytyczna Microsoftu to instancja poniżej 16 bajtów, która nie będzie często opakowywana. Duże albo
 mutowalne struktury powodują kosztowne kopiowanie i subtelne błędy, więc domyślnym wyborem jest klasa.
 
-### Dlaczego `list[0].X = 5` się nie kompiluje, gdy lista przechowuje strukturę? {mid}
+### Co daje `readonly struct`? {mid}
 
-Indeksator `List<T>` zwraca **kopię** elementu, a modyfikacja pola tymczasowej kopii zostałaby utracona, więc kompilator zgłasza CS1612.
-Dla tablicy `array[0].X = 5` działa, bo element tablicy jest zmienną. Rozwiązaniem jest niemutowalna struktura i podmiana całego elementu:
-`list[0] = list[0] with { X = 5 }`. Problem to kolejny argument za niemutowalnymi strukturami.
+Kompilator wymusza, żeby wszystkie pola były tylko do odczytu (przypisanie właściwości poza inicjalizacją to błąd kompilacji: w teście `V = 5` w metodzie `readonly struct`
+dało CS0200), co czyni typ niemutowalnym i bezpiecznym do kopiowania. Pozwala też kompilatorowi pominąć kopie obronne przy wywoływaniu składowych przez parametry `in` albo
+pola `readonly`, które inaczej tworzy, żeby chronić oryginał przed mutacją. W strukturach, które nie mogą być w pełni niemutowalne, można oznaczać jako `readonly` pojedyncze
+składowe.
 
 ### Czym różnią się konstruktory główne w klasach od tych w rekordach? {mid}
 

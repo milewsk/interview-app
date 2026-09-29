@@ -76,7 +76,7 @@ To wzorzec behawioralny, w którym żądanie jest przekazywane wzdłuż łańcuc
 i może zatrzymać dalsze przetwarzanie. Nadawca zna tylko pierwszy handler, a nie ten, który ostatecznie obsłuży żądanie. Rozprzęga nadawców od odbiorców i pozwala składać kroki
 przetwarzania.
 
-### Jaki problem rozwiązuje? {junior}
+### Jaki problem rozwiązuje łańcuch zobowiązań? {junior}
 
 Zastępuje jedną dużą metodę pełną kolejnych sprawdzeń (walidacja, autoryzacja, cache, logowanie) osobnymi małymi handlerami, z których każdy ma jedną odpowiedzialność. Handlery można
 wykorzystywać wielokrotnie, testować osobno, przestawiać i dodawać bez modyfikowania pozostałych, a łańcuch można konfigurować w czasie wykonania.
@@ -98,11 +98,12 @@ subtelne błędy, np. autoryzację odrzucającą każde żądanie albo błędy o
 To sytuacja, gdy handler zatrzymuje żądanie zamiast przekazać je dalej: w middleware nie woła `next` i sam zapisuje odpowiedź (403, 304 z cache, plik statyczny). Dalsze handlery
 w łańcuchu i endpoint nigdy się nie wykonają. Tak walidacja albo autoryzacja wcześnie odrzuca żądania, a cache unika zbędnej pracy.
 
-### Czym jest `DelegatingHandler`? {mid}
+### Jak napisać middleware mierzące czas trwania żądania? {mid}
 
-To klasa bazowa handlerów komunikatów HTTP, które opakowują wewnętrzny handler: `SendAsync` może zmienić żądanie, wywołać `base.SendAsync`, żeby przekazać je dalej, a potem sprawdzić
-albo zmienić odpowiedź. Łańcuch takich handlerów kończy się handlerem, który faktycznie wysyła żądanie. Z `IHttpClientFactory` dodaje się je przez `AddHttpMessageHandler`, żeby
-podpiąć do wychodzących wywołań zagadnienia przekrojowe, takie jak nagłówki uwierzytelniające, logowanie, identyfikatory korelacji i ponowienia.
+Uruchomić `Stopwatch`, wywołać `await next(context)`, zatrzymać pomiar i zalogować czas, a middleware zarejestrować wcześnie, żeby obejmowało resztę pipeline'u. Żeby zwrócić
+czas w nagłówku odpowiedzi, nie ustawia się go po `next`: odpowiedź zwykle jest już wtedy rozpoczęta, a w teście rzuciło to „The response headers cannot be modified because
+the response has already started”. Przed wywołaniem `next` rejestruje się `context.Response.OnStarting(...)`, które działa tuż przed wysłaniem nagłówków (ustawiony tam
+nagłówek dotarł w odpowiedzi).
 
 ### Czym różni się wariant „wygrywa pierwszy handler” od wariantu pipeline? {mid}
 

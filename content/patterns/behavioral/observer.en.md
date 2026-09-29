@@ -74,11 +74,11 @@ The subject declares an `event` of a delegate type (e.g. `EventHandler<TArgs>`);
 `Event?.Invoke(this, args)`, calling every subscribed handler. The `event` keyword restricts outside code to subscribing and unsubscribing, so only the owning class can raise it
 or clear the list.
 
-### How can events cause memory leaks? {mid}
+### When would you use Rx.NET instead of plain C# events? {mid}
 
-Subscribing stores a delegate referencing the subscriber in the publisher's invocation list. If the publisher lives longer than the subscriber (a static event, a singleton
-service, an application-wide event) and the subscriber never unsubscribes, the publisher keeps it reachable and the garbage collector can't free it, along with everything it
-references. The fix is unsubscribing, typically in `Dispose`, or using weak event patterns.
+When you work with streams of events over time rather than single notifications: throttling or debouncing input, combining several sources, windowing or buffering, retrying
+and timeouts, or turning events into queries with LINQ-style operators. Plain events are simpler and enough for one-off notifications between objects. Rx adds a dependency and
+a learning curve (schedulers, hot and cold observables, disposing subscriptions), so it pays off mainly in event-heavy code such as UIs, sensors or real-time data.
 
 ### What happens if an event handler throws an exception? {mid}
 

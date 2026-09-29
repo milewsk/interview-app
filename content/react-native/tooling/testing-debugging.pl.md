@@ -104,17 +104,18 @@ awaryjne, gdy nic widocznego dla użytkownika nie identyfikuje elementu.
 długie przytrzymanie dało `pressIn, longPress, pressOut` bez `press`), a pisanie wprowadza znaki po kolei ze zdarzeniami fokusu i zmiany. `userEvent` wyłapuje więcej błędów; `fireEvent` jest
 prostszy i wystarcza do własnych zdarzeń.
 
-### Dlaczego testy snapshotowe są odradzane? {mid}
+### Jak testować komponent korzystający z React Navigation? {mid}
 
-Snapshot jest uznawany za poprawny w chwili pierwszego zapisu, nawet jeśli wynik jest błędny; duże snapshoty zmieniają się przy każdym refaktoringu i są aktualizowane przez `--updateSnapshot`
-bez prawdziwego przeglądu, więc wykrywają zmiany, a nie błędy. Jawne asercje na tym, co widzi użytkownik, mają większą wartość. Małe snapshoty stabilnych, prezentacyjnych komponentów nadal
-mogą się przydać.
+Renderować go w prawdziwym `NavigationContainer` z małym nawigatorem zawierającym potrzebne ekrany, wykonywać interakcje jak użytkownik i sprawdzać, co się wyrenderowało: w
+teście naciśnięcie przycisku pokazało „Details 42”, a `useFocusEffect` zalogował blur i focus przy wyjściu z ekranu i powrocie. Ref nawigacji (`createNavigationContainerRef`)
+pozwala testom zajrzeć do stanu. Zamockowanie `useNavigation` i sprawdzenie wywołania `navigate` jest szybsze, ale testuje szczegóły implementacji zamiast zachowania.
 
-### Jak testować kod, który zachowuje się inaczej na iOS i Androidzie? {senior}
+### Jak testować zachowanie ekranu offline? {mid}
 
-Uruchamiać zestaw testów dla obu platform: preset domyślnie używa iOS, a drugi projekt Jest z `haste.defaultPlatform: 'android'` rozwiązuje pliki `.android` i ustawia `Platform.OS` na
-`android`. W teście ten sam import wskazał plik iOS w jednej konfiguracji i plik Androida w drugiej, a zachowanie tylko androidowe, jak `BackHandler`, dało się przetestować. Różnice natywne
-nadal wymagają testów E2E na obu platformach.
+Sterować łącznością w teście zamiast polegać na urządzeniu: z TanStack Query wywołać `onlineManager.setOnline(false)` przed renderem, sprawdzić UI offline, potem
+`setOnline(true)` i poczekać na dane przez `findBy*`. W teście zapytanie pozostało w stanie `pending/paused` bez wywołań pobierania, dopóki urządzenie było offline, i wykonało
+się po odzyskaniu połączenia, a mutacja rozpoczęta offline została wstrzymana i wysłana po odzyskaniu połączenia. Każdy test dostaje świeży `QueryClient` z wyłączonymi
+ponowieniami, a stronę natywną sprawdza się na prawdziwych urządzeniach w trybie samolotowym.
 
 ### Jakich narzędzi E2E używa się w React Native? {mid}
 

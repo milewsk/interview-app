@@ -132,11 +132,11 @@ When a type represents a small, single value (e.g. a point, money, an identifier
 a real gain. Microsoft's guideline is an instance under 16 bytes that won't be boxed often. Large or mutable structs cause costly copying and subtle bugs,
 so a class is the default.
 
-### Why doesn't `list[0].X = 5` compile when the list stores a struct? {mid}
+### What does `readonly struct` give you? {mid}
 
-The `List<T>` indexer returns a **copy** of the element, and modifying a field of a temporary copy would be lost, so the compiler reports CS1612. For an
-array, `array[0].X = 5` works, because an array element is a variable. The solution is an immutable struct and replacing the whole element:
-`list[0] = list[0] with { X = 5 }`. The problem is one more argument for immutable structs.
+The compiler enforces that all fields are read-only (assigning a property outside initialization is a compile error: in a test, `V = 5` in a method of a `readonly struct` gave
+CS0200), which makes the type immutable and safe to copy. It also lets the compiler skip defensive copies when members are called through `in` parameters or `readonly` fields,
+which it otherwise makes to protect the original from mutation. For structs that can't be fully immutable, individual members can be marked `readonly`.
 
 ### How do primary constructors in classes differ from those in records? {mid}
 

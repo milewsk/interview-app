@@ -184,19 +184,20 @@ React maps state to hooks **by call order** within the component. If a hook is s
 every following hook receives state "shifted" by one position. Hooks must therefore be called in the
 same order on every render.
 
-### How do you reset a component's state when a prop (e.g. `userId`) changes? {mid}
+### When should a value be computed during render instead of stored in state? {mid}
 
-The simplest way is to give the component `key={userId}`. React treats it as a new component and
-creates fresh state. You don't need an effect that resets state, since that causes an extra render
-with stale data.
+Whenever it can be derived from existing props or state: a full name from first and last name, a filtered list from items and a query, a total from cart lines. Computing it
+during render (with `useMemo` only if it's expensive) keeps a single source of truth. Copying it into state and syncing it with `useEffect` causes an extra render with stale
+data and easily gets out of sync. State is for data that changes independently, such as user input or server responses.
 
 ### What does the "Too many re-renders" error mean? {junior}
 
 A setter was called **unconditionally during render**, so each render schedules another one. The usual
 cause is `onClick={setOpen(true)}` instead of `onClick={() => setOpen(true)}`.
 
-### When should you choose `useReducer` over `useState`? {mid}
+### How do you update one item in an array stored in state? {mid}
 
-When state has several related fields that change together, when transitions depend on the kind of
-action (`'added'`, `'deleted'`…), or when you want to extract and test the update logic as a pure
-function. For simple, independent values `useState` is more readable.
+Create a new array instead of mutating the existing one: `setTodos(todos => todos.map(t => t.id === id ? { ...t, done: !t.done } : t))` copies the array and replaces only the
+changed item with a new object, so React sees new references and re-renders. Add items with `[...todos, item]`, remove them with `filter`, and sort a copy with `toSorted()`
+rather than `sort()`, which mutates. Mutating the item in place (`todo.done = true`) keeps the same references, so the update may be skipped and memoized children won't notice
+it.

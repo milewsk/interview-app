@@ -158,12 +158,12 @@ Nie. Zwrócony promise od razu się odrzuca, ale pozostałe operacje nadal trwaj
 ignorowane. Promise nie ma wbudowanego anulowania. Do przerwania np. zapytań `fetch` używa się
 `AbortController`: przekazuje się `signal` i wywołuje `abort()` w `catch`.
 
-### Dlaczego `array.forEach(async ...)` nie działa zgodnie z oczekiwaniem? {mid}
+### Jak zamienić API oparte na callbackach na promise? {mid}
 
-`forEach` ignoruje wartości zwracane przez callback, więc nie czeka na zwrócone promise'y. Kod po
-`forEach` wykona się, zanim operacje się zakończą, a ich błędy nie trafią do otaczającego `try/catch`.
-Należy użyć `for...of` z `await` (sekwencyjnie) albo `await Promise.all(array.map(async ...))`
-(równolegle).
+Opakować je w `new Promise((resolve, reject) => legacy(arg, (err, value) => err ? reject(err) : resolve(value)))`, a w Node użyć `util.promisify`, który robi to samo dla
+funkcji zgodnych z konwencją callbacków `(err, value)` (sprawdzone: funkcja po promisify rozwiązała się wynikiem i odrzuciła błędem z callbacka). Promise rozstrzyga się tylko
+raz, więc późniejsze wywołania callbacka są ignorowane. Nie należy opakowywać w `new Promise` kodu, który już zwraca promise: ten antywzorzec („explicit construction”) tylko
+dodaje miejsca, w których gubią się błędy.
 
 ### Jak wykonać wiele żądań równolegle, ale nie więcej niż N naraz? {senior}
 

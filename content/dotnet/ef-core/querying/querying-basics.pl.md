@@ -111,13 +111,13 @@ W końcowej projekcji (najwyższym `Select`): EF wykonuje przetłumaczalną czę
 bezpieczne, bo nie zmienia, które wiersze są pobierane. Kod klienta w `Where`, `OrderBy`, `GroupBy` czy złączeniach wymagałby pobrania wszystkich
 danych, więc EF go odrzuca.
 
-### Czym różnią się `First`, `Single` i ich warianty `OrDefault`? {junior}
+### Jak `First` i `Single` tłumaczą się na SQL i kiedy używać każdego z nich? {junior}
 
 `First` zwraca pierwszy pasujący wiersz i rzuca wyjątek, gdy go nie ma, a `FirstOrDefault` zwraca `null`/wartość domyślną. `Single` dodatkowo sprawdza,
 że pasuje dokładnie jeden wiersz, i rzuca „Sequence contains more than one element”, gdy jest ich więcej, dlatego generuje `TOP(2)`. `Single` służy do
 zapytań po unikalnym kluczu, a `First` łączy się z `OrderBy`, bo bez niego „pierwszy” wiersz jest przypadkowy.
 
-### Dlaczego `Any()` jest lepsze niż `Count() > 0`? {junior}
+### Jaki SQL generują `Any()` i `Count() > 0` i którego używać? {junior}
 
 `Any()` tłumaczy się na `EXISTS`, co pozwala bazie zatrzymać się na pierwszym pasującym wierszu. `Count() > 0` musi najpierw policzyć wszystkie pasujące
 wiersze. Przy dużych tabelach i mało selektywnych warunkach różnica bywa znacząca, a `Any()` lepiej wyraża intencję.

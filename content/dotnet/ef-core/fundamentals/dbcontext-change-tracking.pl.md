@@ -123,19 +123,18 @@ await db.Blogs.Where(b => b.IsArchived)
 
 ## Pytania
 
-### Jakie wzorce realizuje `DbContext`? {mid}
+### Czym jest `DetectChanges` i kiedy się wykonuje? {senior}
 
-**Unit of Work**, bo zbiera zmiany wielu encji i zapisuje je razem w `SaveChanges` (domyślnie
-w jednej transakcji), oraz **Identity Map**, bo w obrębie kontekstu każdy wiersz jest reprezentowany
-przez jedną instancję. `DbSet<T>` bywa porównywany do repozytorium, dlatego dokładanie własnego
-generycznego repozytorium nad EF Core często niczego nie wnosi.
+Dla zwykłych encji EF stosuje śledzenie zmian przez migawki: zapamiętuje oryginalne wartości przy dołączeniu encji, a `DetectChanges` porównuje je z bieżącymi, żeby znaleźć
+zmiany. Wykonuje się automatycznie w `SaveChanges`, `Entries()`, `Entry()` i kilku innych API. Przy `AutoDetectChangesEnabled = false` zmieniona encja pozostała w teście w
+stanie `Unchanged`, dopóki nie wywołano `DetectChanges()`, a potem przeszła w `Modified`. Wyłączenie przyspiesza dodawanie wielu encji, ale przed zapisem trzeba samemu wywołać
+`DetectChanges`.
 
-### Jaki czas życia powinien mieć `DbContext` w ASP.NET Core i dlaczego? {mid}
+### Co robi `ChangeTracker.Clear()` i kiedy się przydaje? {mid}
 
-**Scoped**, czyli jeden na żądanie HTTP (domyślnie przez `AddDbContext`). Kontekst jest lekki,
-przeznaczony do jednej jednostki pracy i nie jest thread-safe. Singleton kumulowałby śledzone encje,
-zwracał przestarzałe dane i był używany współbieżnie z wielu żądań. Do pracy w tle albo równoległej
-używa się `IDbContextFactory<T>` i tworzy osobny kontekst na każdą jednostkę pracy.
+Przestaje śledzić wszystkie encje naraz, jakby kontekst był nowy, niczego nie zapisując: w teście po zmianie śledzonej encji i wywołaniu `Clear()` tracker był pusty, a
+`SaveChanges` zapisało 0 wierszy. Przydaje się w długich jednostkach pracy, np. importach wsadowych, żeby między partiami ograniczyć zużycie pamięci i koszt `DetectChanges`,
+oraz w testach, żeby kolejne zapytania trafiały do bazy zamiast zwracać już śledzone instancje. Często czystszą alternatywą jest nowy, krótko żyjący kontekst.
 
 ### Czy można wykonać dwa zapytania równolegle na jednym `DbContext`? {mid}
 
@@ -178,12 +177,11 @@ ustawia każdą kolumnę. Jeśli obiekt przyszedł z API i nie zawiera wszystkic
 (np. `null`, `0`) nadpiszą dane w bazie. Bezpieczniej jest pobrać encję, skopiować z DTO tylko
 dozwolone pola i wywołać `SaveChanges`, które zaktualizuje wyłącznie zmienione kolumny.
 
-### Czym `ExecuteUpdate`/`ExecuteDelete` różnią się od zmian przez `SaveChanges`? {mid}
+### Jak sprawdzić, co śledzi change tracker? {mid}
 
-Wykonują jedno polecenie SQL od razu, bez ładowania encji do pamięci, więc są znacznie wydajniejsze
-przy operacjach masowych. Omijają jednak change tracker: śledzone instancje nie widzą zmian, a
-późniejsze `SaveChanges` może je nadpisać. Nie tworzą wspólnej transakcji z innymi operacjami ani nie
-sprawdzają automatycznie tokenów współbieżności. Zwracają za to liczbę zmienionych wierszy.
+Użyć `ChangeTracker.DebugView.ShortView` (jedna linia na encję z kluczem i stanem, np. `Order {Id: 1} Modified`) albo `LongView` (wszystkie właściwości z wartościami
+oryginalnymi i bieżącymi), widocznego też w debuggerze. `ChangeTracker.Entries()` daje wpisy programowo, a `Entry(entity).Property(...).OriginalValue` pokazuje pojedynczą
+wartość. To najszybszy sposób, żeby zrozumieć, dlaczego `SaveChanges` wysyła nieoczekiwane aktualizacje albo dlaczego encja się nie zapisuje.
 
 ### Czym jest identity resolution i jakie ma skutki uboczne? {senior}
 

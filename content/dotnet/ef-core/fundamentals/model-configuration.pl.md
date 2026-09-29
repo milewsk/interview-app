@@ -142,11 +142,12 @@ EF Core domyślnie generuje dla kluczy na SQL Server sekwencyjne GUID-y, co omij
 sama tworzy klucze, używa się formatu uporządkowanego czasowo, jak `Guid.CreateVersion7()` (.NET 9+), albo nieklastrowego klucza GUID i klastrowej
 kolumny całkowitej.
 
-### Czym są właściwości cienia (shadow properties)? {mid}
+### Czym jest pole zapasowe (backing field) i kiedy EF Core go używa? {mid}
 
-To właściwości istniejące w modelu EF i w bazie, ale nie w klasie encji, np. klucze obce bez właściwości CLR albo kolumny audytowe jak `CreatedAt`.
-Konfiguruje się je przez `Property<DateTime>("CreatedAt")`, odczytuje i ustawia przez `Entry(entity).Property("CreatedAt")`, a w zapytaniach używa
-przez `EF.Property<DateTime>(e, "CreatedAt")`. Pozwalają trzymać szczegóły infrastruktury poza modelem domenowym.
+To prywatne pole, które EF czyta i zapisuje zamiast właściwości (albo obok niej), co pozwala hermetyzować stan. Zgodnie z konwencją EF znajduje pola nazwane np. `_lines` dla
+właściwości `Lines`, więc encja może udostępniać `IReadOnlyCollection<Line> Lines => _lines` i zmieniać kolekcję tylko przez metody, jak `AddLine`. Sprawdzone na EF Core 10:
+nawigacja została zmapowana na pole `_lines`, a `Include` wczytało przez nie pozycję. `HasField` i `UsePropertyAccessMode` konfigurują niekonwencjonalne nazwy i sposób
+dostępu.
 
 ### Co daje `ConfigureConventions`? {mid}
 

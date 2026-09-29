@@ -104,11 +104,11 @@ C# 12 ships with .NET 8, C# 13 with .NET 9 and C# 14 with .NET 10. By default th
 a `net10.0` project uses C# 14. You can set `<LangVersion>` explicitly, but using a newer language version than the framework supports isn't
 supported, because some features need runtime or library support.
 
-### What are primary constructors, and how do they differ between classes and records? {mid}
+### What does "alias any type" allow in C# 12? {mid}
 
-Since C# 12, a class or struct can declare constructor parameters right after its name (`class Service(IRepo repo)`), and the parameters are visible in the
-whole body, which reduces boilerplate, e.g. in dependency injection. In a record, the parameters also become public properties that take part in equality.
-In a class they're just captured parameters: not public, mutable, and without a generated property.
+A `using` alias can now name any type, not only named types: tuples (`using Point = (int X, int Y);`), arrays, pointers and closed generics (`using Names = List<string>;`). It
+shortens long type names and gives meaning to tuple shapes without declaring a new type; checked on .NET 10: `Point p = (1, 2)` exposed `p.X` and `p.Y`. The alias is only a
+name for the same type, so it doesn't create type safety between different aliases of the same tuple.
 
 ### What are collection expressions? {junior}
 

@@ -174,13 +174,11 @@ allocations. `class` is right for objects with identity, large or mutable object
 cases where the object is passed around a lot. A large struct copied on every call can be slower
 than a class.
 
-### How does `record` differ from `class` and from `record struct`? {mid}
+### What do `ref`, `out` and `in` do when passing arguments? {mid}
 
-`record` (i.e. `record class`) is a reference type for which the compiler generates **value
-equality** (`Equals`, `==`, `GetHashCode`), a readable `ToString()`, deconstruction and the `with`
-expression. A plain `class` compares references. `record struct` gives the same conveniences for a
-value type. Positional records `record Person(string Name)` get `init` properties, while in a
-`record struct` they are mutable by default unless you add `readonly`.
+All three pass a reference to the caller's variable instead of a copy. `ref` lets the method read and modify the variable (it must be initialized before the call). `out`
+requires the method to assign it and is used to return extra values, as in `int.TryParse("42", out var n)`. `in` passes a read-only reference, which avoids copying large
+structs while guaranteeing the method can't modify them. For reference types, `ref` matters only when the method assigns a new object to the parameter.
 
 ### Why doesn't `list[0].X = 5` compile for a `List<struct>`? {mid}
 

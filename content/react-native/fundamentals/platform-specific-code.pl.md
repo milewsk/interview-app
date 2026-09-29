@@ -98,11 +98,11 @@ nie musiała wiedzieć, który został wczytany.
 Gdy implementacje różnią się istotnie, np. innymi natywnymi komponentami, innymi bibliotekami albo zupełnie innymi layoutami. Osobne pliki zachowują czytelność każdej wersji i pozwalają
 na importy tylko dla jednej platformy bez wczytywania kodu drugiej. Dla wartości paddingu czy jednego propa prostszy jest `Platform.select` w miejscu.
 
-### Jak obsłużyć przycisk wstecz na Androidzie? {mid}
+### Jak dostosować layout do tabletów albo telewizorów? {mid}
 
-Biblioteki nawigacji obsługują go domyślnie, cofając się na stosie albo zamykając aplikację w korzeniu. Dla własnego zachowania (zamknięcie modala czy bottom sheetu, potwierdzenie
-niezapisanych zmian) subskrybuje się `BackHandler.addEventListener('hardwareBackPress', handler)` i zwraca `true`, żeby skonsumować zdarzenie; subskrypcję usuwa się przy odmontowaniu,
-a w React Navigation lepiej subskrybować tylko wtedy, gdy ekran ma fokus.
+`Platform.isPad` (iOS) i `Platform.isTV` rozpoznają niektóre typy urządzeń, ale decyzje o layoucie lepiej opierać na dostępnym miejscu: odczytywać `useWindowDimensions()` i
+przełączać layouty na progach szerokości (np. widok lista-szczegóły powyżej 768 dp), bo tablety z Androidem, urządzenia składane, podzielony ekran i okna o zmiennym rozmiarze
+zmieniają szerokość bez zmiany typu urządzenia. Aplikacje na telewizory potrzebują też nawigacji opartej na fokusie zamiast dotyku.
 
 ### Czym jest React Native Web? {mid}
 

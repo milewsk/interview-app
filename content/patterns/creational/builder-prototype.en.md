@@ -99,11 +99,11 @@ A shallow copy copies the object's fields as they are: value types are duplicate
 copy changes it in the original too (verified with `MemberwiseClone` and with a record's `with`). A deep copy also copies the referenced objects recursively, making the copy
 fully independent. Choose based on whether nested objects are meant to be shared.
 
-### Does `with` on a record create a deep copy? {mid}
+### When is the prototype pattern useful in practice? {mid}
 
-No. `with` calls the record's copy constructor, which copies each field shallowly and then applies the changes you listed. Reference-type properties such as `List<string>`
-are shared between the original and the copy, so mutating the list through one is visible in the other. For full independence, use immutable collections in records or copy
-the nested objects explicitly in the `with` expression.
+When creating an object from scratch is expensive or complex (a parsed template, a configured document, a game entity with many components) and new objects differ only
+slightly: you clone a preconfigured prototype and adjust it, possibly from a registry of prototypes keyed by name. In C#, records with `with` give prototype-style copying for
+immutable data. It's less common in business code, where factories or builders usually express creation more clearly.
 
 ### Why is `ICloneable` discouraged? {senior}
 

@@ -113,11 +113,11 @@ Nie. Funkcja async zwraca promise, a błąd odrzuca ten promise dopiero późnie
 `try` albo `.catch()` na promise. Podobnie `try` wokół `setTimeout(() => { throw ... })` nie złapie błędu z callbacku, bo wykona się on
 w innym zadaniu event loop.
 
-### Co się stanie z nieobsłużonym odrzuceniem promise'a lub wyjątkiem? {mid}
+### Dlaczego `try/catch` wokół `setTimeout` nie łapie błędu rzuconego w jego callbacku? {mid}
 
-W przeglądarce błąd trafia do konsoli i zdarzeń `error` / `unhandledrejection` na `window`, a strona działa dalej (choć jej stan może być
-niespójny). W Node nieobsłużony wyjątek i (od v15) nieobsłużone odrzucenie domyślnie **kończą proces**. Globalne handlery służą do
-logowania i łagodnego zamknięcia, a nie do kontynuowania pracy jak gdyby nic.
+Blok `try` obejmuje tylko kod, który wykonuje się w nim synchronicznie. `setTimeout` tylko planuje callback i wraca, więc `try` się kończy; gdy callback rzuci wyjątek później,
+działa na nowym stosie wywołań bez otaczającego `try` i błąd staje się nieprzechwycony (sprawdzone w Node: `try` się zakończył, a potem wywołało się `uncaughtException`). To
+samo dotyczy listenerów zdarzeń i callbacków. `try/catch` umieszcza się w callbacku albo używa promisów z `await`, gdzie odrzucenie trafia do oczekującego `try`.
 
 ### Kiedy łapać wyjątki, a kiedy pozwolić im się propagować? {mid}
 

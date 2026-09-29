@@ -111,11 +111,11 @@ No. An async function returns a promise, and the error rejects that promise only
 `try`, or `.catch()` on the promise. Likewise, a `try` around `setTimeout(() => { throw ... })` won't catch the callback's error, because it runs
 in a different event loop task.
 
-### What happens to an unhandled promise rejection or exception? {mid}
+### Why doesn't `try/catch` around `setTimeout` catch an error thrown in its callback? {mid}
 
-In the browser the error goes to the console and to the `error` / `unhandledrejection` events on `window`, and the page keeps running (although its
-state may be inconsistent). In Node an unhandled exception and (since v15) an unhandled rejection **terminate the process** by default. Global
-handlers are for logging and graceful shutdown, not for carrying on as if nothing happened.
+The `try` block only covers code that runs synchronously inside it. `setTimeout` just schedules the callback and returns, so the `try` finishes; when the callback throws
+later, it runs on a fresh call stack with no surrounding `try`, and the error becomes uncaught (checked in Node: the `try` completed, then `uncaughtException` fired). The same
+applies to event listeners and callbacks. Put the `try/catch` inside the callback, or use promises with `await`, where a rejection propagates to the awaiting `try`.
 
 ### When should you catch exceptions, and when let them propagate? {mid}
 

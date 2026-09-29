@@ -80,11 +80,12 @@ Podmiot deklaruje `event` typu delegatu (np. `EventHandler<TArgs>`); obserwatorz
 `Event?.Invoke(this, args)`, wywołując każdy zasubskrybowany handler. Słowo kluczowe `event` ogranicza kod z zewnątrz do subskrybowania i wypisywania się, więc tylko klasa właściciela
 może wywołać zdarzenie albo wyczyścić listę.
 
-### Jak zdarzenia mogą powodować wycieki pamięci? {mid}
+### Kiedy użyć Rx.NET zamiast zwykłych zdarzeń C#? {mid}
 
-Subskrypcja zapisuje w liście wywołań wydawcy delegat wskazujący subskrybenta. Jeśli wydawca żyje dłużej niż subskrybent (zdarzenie statyczne, serwis singleton, zdarzenie całej
-aplikacji), a subskrybent nigdy się nie wypisze, wydawca utrzymuje go osiągalnym i garbage collector nie może go zwolnić razem ze wszystkim, do czego się odwołuje. Rozwiązaniem jest
-wypisanie się, zwykle w `Dispose`, albo wzorce słabych zdarzeń.
+Gdy pracuje się ze strumieniami zdarzeń w czasie, a nie z pojedynczymi powiadomieniami: dławienie albo debouncing wejścia, łączenie kilku źródeł, okna i buforowanie,
+ponowienia i limity czasu albo zamiana zdarzeń w zapytania operatorami w stylu LINQ. Zwykłe zdarzenia są prostsze i wystarczają do jednorazowych powiadomień między obiektami.
+Rx dodaje zależność i wymaga nauki (schedulery, obserwowalne gorące i zimne, zwalnianie subskrypcji), więc opłaca się głównie w kodzie pełnym zdarzeń, jak UI, czujniki czy
+dane w czasie rzeczywistym.
 
 ### Co się stanie, gdy handler zdarzenia rzuci wyjątek? {mid}
 
