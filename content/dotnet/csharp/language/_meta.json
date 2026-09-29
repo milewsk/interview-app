@@ -1,0 +1,17 @@
+{
+  "title": { "pl": "Język", "en": "Language" },
+  "order": [
+    "value-and-reference-types",
+    "classes-structs-records",
+    "oop-and-interfaces",
+    "generics",
+    "nullable-reference-types",
+    "pattern-matching",
+    "exceptions",
+    "delegates-events-lambdas",
+    "collections",
+    "linq",
+    "strings-and-spans",
+    "new-in-csharp"
+  ]
+}
